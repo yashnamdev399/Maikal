@@ -7,8 +7,7 @@
     "start": "node src/server.js",
     "start:prod": "NODE_ENV=production node src/server.js",
     "dev": "nodemon src/server.js",
-    "seed": "node src/config/seed.js",
-    "build": "cd ../maikal-frontend && npm run build"
+    "seed": "node src/config/seed.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
