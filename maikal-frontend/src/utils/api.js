@@ -1,6 +1,6 @@
 // In dev: Vite proxies /api → http://localhost:5000
-// In prod: React is served by the same Express server, so /api works directly
-const BASE = '/api';
+// In prod: Use VITE_API_URL env var pointing to Railway backend
+const BASE = import.meta.env.VITE_API_URL || '/api';
 
 export const getToken = () => localStorage.getItem('maikal_token');
 
