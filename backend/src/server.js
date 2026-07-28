@@ -65,10 +65,12 @@ const PORT = process.env.PORT || 5000;
 const start = async () => {
   try {
     await connectDB();
-    app.listen(PORT, () => {
-      console.log(`🌿 Maikal Natural Foundation → http://localhost:${PORT}`);
-      if (!isProd) console.log(`📚 Swagger → http://localhost:${PORT}/api-docs`);
-    });
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🌿 Maikal Natural Foundation listening on 0.0.0.0:${PORT}`);
+  if (!isProd) {
+    console.log(`📚 Swagger → http://localhost:${PORT}/api-docs`);
+  }
+});
   } catch (err) {
     console.error('❌ Failed to start:', err.message);
     process.exit(1);
