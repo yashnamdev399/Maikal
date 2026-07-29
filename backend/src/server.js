@@ -2,12 +2,15 @@ require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
+const fs    = require('fs');
 const swaggerUi    = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const { connectDB } = require('./config/db');
 
 const app  = express();
 const isProd = process.env.NODE_ENV === 'production';
+const hasPublicBuild = fs.existsSync(path.join(__dirname, '../public/index.html'));
+const serveFrontend = isProd || hasPublicBuild;
 
 app.use(cors());
 app.use(express.json());
@@ -15,8 +18,8 @@ app.use(express.json());
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Serve React build in production
-if (isProd) {
+// Serve React build
+if (serveFrontend) {
   app.use(express.static(path.join(__dirname, '../public'), {
     setHeaders: (res, filePath) => {
       if (filePath.endsWith('.html')) {
@@ -58,7 +61,7 @@ app.use('/api/testimonials', require('./routes/testimonials.routes'));
 app.get('/health', (req, res) => res.json({ status: 'ok', service: 'Maikal Natural Foundation' }));
 
 // React SPA fallback
-if (isProd) {
+if (serveFrontend) {
   app.get('*', (req, res) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.sendFile(path.join(__dirname, '../public/index.html'));
