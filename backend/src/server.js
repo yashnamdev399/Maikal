@@ -9,8 +9,19 @@ const { connectDB } = require('./config/db');
 
 const app  = express();
 const isProd = process.env.NODE_ENV === 'production';
-const hasPublicBuild = fs.existsSync(path.join(__dirname, '../public/index.html'));
+const PUBLIC_DIR = path.join(__dirname, '../public');
+const INDEX_HTML = path.join(PUBLIC_DIR, 'index.html');
+const hasPublicBuild = fs.existsSync(INDEX_HTML);
 const serveFrontend = isProd || hasPublicBuild;
+
+// Debug: log which bundle is being served (helps trace Railway cache issues)
+console.log(`📂 Public dir: ${PUBLIC_DIR}`);
+console.log(`📄 index.html exists: ${hasPublicBuild}`);
+if (hasPublicBuild) {
+  const html = fs.readFileSync(INDEX_HTML, 'utf8');
+  const match = html.match(/assets\/index-[^"]+\.js/);
+  console.log(`🔖 Active JS bundle: ${match ? match[0] : 'NOT FOUND'}`);
+}
 
 app.use(cors());
 app.use(express.json());
@@ -20,7 +31,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Serve React build
 if (serveFrontend) {
-  app.use(express.static(path.join(__dirname, '../public'), {
+  app.use(express.static(PUBLIC_DIR, {
     setHeaders: (res, filePath) => {
       if (filePath.endsWith('.html')) {
         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -64,7 +75,7 @@ app.get('/health', (req, res) => res.json({ status: 'ok', service: 'Maikal Natur
 if (serveFrontend) {
   app.get('*', (req, res) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.sendFile(path.join(__dirname, '../public/index.html'));
+    res.sendFile(INDEX_HTML);
   });
 }
 
