@@ -17,7 +17,13 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Serve React build in production
 if (isProd) {
-  app.use(express.static(path.join(__dirname, '../public')));
+  app.use(express.static(path.join(__dirname, '../public'), {
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      }
+    }
+  }));
 }
 
 // Swagger (dev only)
@@ -54,6 +60,7 @@ app.get('/health', (req, res) => res.json({ status: 'ok', service: 'Maikal Natur
 // React SPA fallback
 if (isProd) {
   app.get('*', (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.sendFile(path.join(__dirname, '../public/index.html'));
   });
 }
