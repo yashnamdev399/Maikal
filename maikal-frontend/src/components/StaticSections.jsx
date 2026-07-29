@@ -189,7 +189,7 @@ export function Testimonials() {
               const meta  = lang === 'hi' ? (c.meta_hi  || c.meta_en  || '') : (c.meta_en || '');
               const stars = '★'.repeat(Math.min(5, Math.max(1, c.rating || 5)));
               return (
-                <div key={c._id || c.id} className="farm-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%`, padding: '0 10px' }}>
+                <div key={c._id || c.id} className="carousel-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%`, padding: '0 10px' }}>
                   <div className="testimonial-card" style={{ height: '100%' }}>
                     <p className="testimonial-text">{quote}</p>
                     <div className="testimonial-author">

@@ -48,9 +48,9 @@ export default function PostsTab() {
       }
 
       if (editing) {
-        await api.put(`/posts/${editing._id || editing.id}`, formData);
+        await api.upload('PUT', `/posts/${editing._id || editing.id}`, formData);
       } else {
-        await api.post('/posts', formData);
+        await api.upload('POST', '/posts', formData);
       }
 
       toast(editing ? 'Post updated!' : 'Post added!');

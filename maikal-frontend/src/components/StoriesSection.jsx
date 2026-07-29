@@ -118,7 +118,7 @@ export default function StoriesSection() {
             <>
               <div className="farm-carousel" style={{ transform: `translateX(-${postPct}%)` }}>
                 {posts.map(p => (
-                  <div key={p._id || p.id} className="farm-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%`, padding: '0 10px' }}>
+                  <div key={p._id || p.id} className="carousel-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%`, padding: '0 10px' }}>
                     <PostCard p={p} lang={lang} />
                   </div>
                 ))}
@@ -139,7 +139,7 @@ export default function StoriesSection() {
                 {gallery.map(g => {
                   const cap = lang === 'hi' ? (g.caption_hi || g.caption_en || '') : (g.caption_en || g.caption_hi || '');
                   return (
-                    <div key={g._id || g.id} className="farm-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%`, padding: '0 10px' }}>
+                    <div key={g._id || g.id} className="carousel-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%`, padding: '0 10px' }}>
                       <div className="gallery-slide-card" onClick={() => setLightbox(g.image_url)}>
                         <img src={g.image_url} alt={cap} loading="lazy" />
                         {cap && <div className="gallery-slide-caption">{cap}</div>}

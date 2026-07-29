@@ -44,7 +44,7 @@ export default function GalleryTab() {
       if (form.caption_hi) formData.append('caption_hi', form.caption_hi);
       if (form.category) formData.append('category', form.category);
 
-      await api.post('/gallery', formData);
+      await api.upload('POST', '/gallery', formData);
       toast('Image added!');
       setModal(false);
       load();
