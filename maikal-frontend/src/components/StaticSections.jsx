@@ -277,11 +277,11 @@ export function AboutSection() {
               <div key={l} className="astat"><span className="anum">{n}</span><span className="albl">{l}</span></div>
             ))}
           </div>
-          {/* <div className="cin-box">
-            <p><strong>CIN:</strong> U01400MP2013NPL031718</p>
-            <p><strong>{t('Registered:','पंजीकृत:')}</strong> {t('Khasra No. 330, Kolu Khedi, Khajuri Sadak, Bhopal, MP 462030','खसरा नं. 330, कोलू खेड़ी, खजूरी सड़क, भोपाल, म.प्र. 462030')}</p>
-            <p><strong>{t('Directors:','निदेशक:')}</strong> Rashmi Sapre, Arpita Kartik Sapre</p>
-          </div> */}
+          <div className="cin-box" style={{ marginTop: '20px', padding: '16px 20px', background: 'rgba(10,122,110,0.06)', borderRadius: '12px', border: '1px solid rgba(10,122,110,0.15)', fontSize: '0.88rem' }}>
+            <p style={{ margin: '0 0 6px 0', color: 'var(--text)' }}><strong>CIN:</strong> U01400MP2013NPL031718</p>
+            <p style={{ margin: '0 0 6px 0', color: 'var(--text)' }}><strong>{t('Registered:','पंजीकृत:')}</strong> {t('Khasra No. 330, Kolu Khedi, Khajuri Sadak, Bhopal, MP 462030','खसरा नं. 330, कोलू खेड़ी, खजूरी सड़क, भोपाल, म.प्र. 462030')}</p>
+            <p style={{ margin: 0, color: 'var(--teal)', fontWeight: 600 }}><strong>{t('Directors:','निदेशक:')}</strong> Rashmi Sapre, Arpita Kartik Sapre</p>
+          </div>
         </div>
       </div>
     </section>

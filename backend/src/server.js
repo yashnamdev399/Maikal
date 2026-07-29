@@ -69,6 +69,23 @@ app.use('/api/publications', require('./routes/publications.routes'));
 app.use('/api/hero',         require('./routes/hero.routes'));
 app.use('/api/testimonials', require('./routes/testimonials.routes'));
 
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain');
+  res.send(`User-agent: *\nAllow: /\nSitemap: ${req.protocol}://${req.get('host')}/sitemap.xml`);
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  res.type('application/xml');
+  const baseUrl = `${req.protocol}://${req.get('host')}`;
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${baseUrl}/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+  <url><loc>${baseUrl}/activities</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>${baseUrl}/publications</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+</urlset>`;
+  res.send(xml);
+});
+
 app.get('/health', (req, res) => res.json({ status: 'ok', service: 'Maikal Natural Foundation' }));
 
 // React SPA fallback
