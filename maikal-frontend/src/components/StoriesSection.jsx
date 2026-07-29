@@ -63,7 +63,7 @@ export default function StoriesSection() {
       {!loading && tab === 'posts' && (
         <div id="posts-panel">
           {posts.length
-            ? <div className="posts-grid">{posts.map(p => <PostCard key={p.id} p={p} lang={lang} />)}</div>
+            ? <div className="posts-grid">{posts.map(p => <PostCard key={p._id || p.id} p={p} lang={lang} />)}</div>
             : <div className="empty-state"><div className="icon">📰</div><p>{t('No posts yet', 'अभी कोई पोस्ट नहीं')}</p></div>
           }
         </div>
@@ -76,7 +76,7 @@ export default function StoriesSection() {
                 {gallery.map(g => {
                   const cap = lang === 'hi' ? (g.caption_hi || g.caption_en || '') : (g.caption_en || g.caption_hi || '');
                   return (
-                    <div key={g.id} className="masonry-item" onClick={() => setLightbox(g.image_url)}>
+                    <div key={g._id || g.id} className="masonry-item" onClick={() => setLightbox(g.image_url)}>
                       <img src={g.image_url} alt={cap} loading="lazy" />
                       {cap && <div className="masonry-caption">{cap}</div>}
                     </div>

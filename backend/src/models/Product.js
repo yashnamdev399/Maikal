@@ -10,6 +10,6 @@ const productSchema = new mongoose.Schema({
   category:       { type: String, default: null },
   image_url:      { type: String, default: null },
   in_stock:       { type: Boolean, default: true },
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 module.exports = mongoose.model('Product', productSchema);

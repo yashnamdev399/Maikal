@@ -7,6 +7,6 @@ const postSchema = new mongoose.Schema({
   content_hi:   { type: String, default: null },
   image_url:    { type: String, default: null },
   published_at: { type: Date, default: Date.now },
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 module.exports = mongoose.model('Post', postSchema);

@@ -10,6 +10,6 @@ const testimonialSchema = new mongoose.Schema({
   rating:     { type: Number, default: 5 },
   is_active:  { type: Boolean, default: true },
   sort_order: { type: Number, default: 0 },
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 module.exports = mongoose.model('Testimonial', testimonialSchema);

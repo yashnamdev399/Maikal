@@ -48,7 +48,7 @@ router.put('/:id', authenticate, async (req, res) => {
       quote_en, quote_hi, name, meta_en, meta_hi,
       avatar: avatar || '👤',
       rating: parseInt(rating) || 5,
-      is_active: is_active !== false && is_active !== '0',
+      is_active: String(is_active) !== 'false' && String(is_active) !== '0' && is_active !== false && is_active !== 0,
       sort_order: parseInt(sort_order) || 0
     });
     res.json({ success: true, message: 'Testimonial updated' });

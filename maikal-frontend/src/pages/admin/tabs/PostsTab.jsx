@@ -25,7 +25,7 @@ export default function PostsTab() {
     setSaving(true);
     try {
       const body = { ...form, image_url: form.image_url || null };
-      if (editing) await api.put(`/posts/${editing.id}`, body);
+      if (editing) await api.put(`/posts/${editing._id || editing.id}`, body);
       else         await api.post('/posts', body);
       toast(editing ? 'Post updated!' : 'Post added!');
       setModal(false); load();
@@ -51,13 +51,13 @@ export default function PostsTab() {
         <thead><tr><th>Title</th><th>Date</th><th>Preview</th><th>Actions</th></tr></thead>
         <tbody>
           {posts.map(p => (
-            <tr key={p.id}>
+            <tr key={p._id || p.id}>
               <td><strong>{p.title_en || '—'}</strong><br/><small style={{color:'#6b7280'}}>{p.title_hi}</small></td>
               <td style={{fontSize:'.82rem',color:'#6b7280'}}>{new Date(p.published_at).toLocaleDateString('en-IN')}</td>
               <td style={{maxWidth:200,fontSize:'.82rem',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{p.content_en}</td>
               <td className="action-btns">
                 <button className="edit-btn" onClick={() => open(p)}>Edit</button>
-                <button className="del-btn"  onClick={() => del(p.id)}>Delete</button>
+                <button className="del-btn"  onClick={() => del(p._id || p.id)}>Delete</button>
               </td>
             </tr>
           ))}

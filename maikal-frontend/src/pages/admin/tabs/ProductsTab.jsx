@@ -31,7 +31,7 @@ export default function ProductsTab() {
       Object.entries(form).forEach(([k, v]) => fd.append(k, v));
       if (imgFile) fd.append('image', imgFile);
       else if (editing?.image_url) fd.append('image_url', editing.image_url);
-      if (editing) await api.upload('PUT', `/products/${editing.id}`, fd);
+      if (editing) await api.upload('PUT', `/products/${editing._id || editing.id}`, fd);
       else         await api.upload('POST', '/products', fd);
       toast(editing ? 'Product updated!' : 'Product added!');
       setModal(false); load();
@@ -57,7 +57,7 @@ export default function ProductsTab() {
         <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Image</th><th>Actions</th></tr></thead>
         <tbody>
           {products.map(p => (
-            <tr key={p.id}>
+            <tr key={p._id || p.id}>
               <td><strong>{p.name_en}</strong><br/><small style={{color:'#6b7280'}}>{p.name_hi}</small></td>
               <td>{p.category}</td>
               <td>₹{p.price} <small>{p.unit}</small></td>
@@ -65,7 +65,7 @@ export default function ProductsTab() {
               <td>{p.image_url && <img src={p.image_url} alt="" style={{width:48,height:48,objectFit:'cover',borderRadius:6}}/>}</td>
               <td className="action-btns">
                 <button className="edit-btn" onClick={() => open(p)}>Edit</button>
-                <button className="del-btn"  onClick={() => del(p.id)}>Delete</button>
+                <button className="del-btn"  onClick={() => del(p._id || p.id)}>Delete</button>
               </td>
             </tr>
           ))}

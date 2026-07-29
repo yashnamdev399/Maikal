@@ -17,6 +17,6 @@ const heroSlideSchema = new mongoose.Schema({
   image_f2_url:   { type: String, default: null },
   badge_float_en: { type: String, default: null },
   badge_float_hi: { type: String, default: null },
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 module.exports = mongoose.model('HeroSlide', heroSlideSchema);

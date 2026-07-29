@@ -95,7 +95,7 @@ export default function PublicationsPage() {
           )}
           {!loading && pubs.length > 0 && (
             <div className="publications-grid">
-              {pubs.map(p => <PubCard key={p.id} pub={p} lang={lang} />)}
+              {pubs.map(p => <PubCard key={p._id || p.id} pub={p} lang={lang} />)}
             </div>
           )}
         </section>

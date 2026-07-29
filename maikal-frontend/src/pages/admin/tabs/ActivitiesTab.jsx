@@ -33,7 +33,7 @@ export default function ActivitiesTab() {
       if (editing) {
         const existing = (() => { try { return JSON.parse(editing.images || '[]'); } catch { return []; } })();
         fd.append('existing_images', JSON.stringify(existing));
-        await api.upload('PUT', `/activities/${editing.id}`, fd);
+        await api.upload('PUT', `/activities/${editing._id || editing.id}`, fd);
       } else {
         await api.upload('POST', '/activities', fd);
       }
@@ -63,7 +63,7 @@ export default function ActivitiesTab() {
           {items.map(a => {
             const imgs = (() => { try { return JSON.parse(a.images || '[]'); } catch { return []; } })();
             return (
-              <tr key={a.id}>
+              <tr key={a._id || a.id}>
                 <td><strong>{a.title_en}</strong><br/><small style={{color:'#6b7280'}}>{a.title_hi}</small></td>
                 <td>
                   <div style={{display:'flex',gap:4}}>
@@ -71,10 +71,10 @@ export default function ActivitiesTab() {
                     {imgs.length > 3 && <span style={{fontSize:'.75rem',color:'#6b7280',alignSelf:'center'}}>+{imgs.length-3}</span>}
                   </div>
                 </td>
-                <td style={{fontSize:'.82rem',color:'#6b7280'}}>{new Date(a.created_at).toLocaleDateString('en-IN')}</td>
+                <td style={{fontSize:'.82rem',color:'#6b7280'}}>{new Date(a.createdAt || a.created_at).toLocaleDateString('en-IN')}</td>
                 <td className="action-btns">
                   <button className="edit-btn" onClick={() => open(a)}>Edit</button>
-                  <button className="del-btn"  onClick={() => del(a.id)}>Delete</button>
+                  <button className="del-btn"  onClick={() => del(a._id || a.id)}>Delete</button>
                 </td>
               </tr>
             );

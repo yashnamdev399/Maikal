@@ -6,6 +6,6 @@ const activitySchema = new mongoose.Schema({
   content_en: { type: String, default: null },
   content_hi: { type: String, default: null },
   images:     { type: [String], default: [] },
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 module.exports = mongoose.model('Activity', activitySchema);

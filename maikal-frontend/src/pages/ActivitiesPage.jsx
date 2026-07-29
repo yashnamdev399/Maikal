@@ -30,7 +30,7 @@ function ActivityCard({ act, lang }) {
         <h3 className="activity-title">{title}</h3>
         <p className="activity-content">{content}</p>
         <div className="activity-date">
-          📅 {new Date(act.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+          📅 {new Date(act.createdAt || act.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
         </div>
       </div>
       <Lightbox src={lightbox} onClose={() => setLightbox(null)} />
@@ -77,7 +77,7 @@ export default function ActivitiesPage() {
           )}
           {!loading && activities.length > 0 && (
             <div className="activities-grid">
-              {activities.map(act => <ActivityCard key={act.id} act={act} lang={lang} />)}
+              {activities.map(act => <ActivityCard key={act._id || act.id} act={act} lang={lang} />)}
             </div>
           )}
         </section>

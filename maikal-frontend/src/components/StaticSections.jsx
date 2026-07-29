@@ -167,7 +167,7 @@ export function Testimonials() {
               const meta  = lang === 'hi' ? (c.meta_hi  || c.meta_en  || '') : (c.meta_en || '');
               const stars = '★'.repeat(Math.min(5, Math.max(1, c.rating || 5)));
               return (
-                <div key={c.id} className="testimonial-card">
+                <div key={c._id || c.id} className="testimonial-card">
                   {/* <div className="testimonial-quote">"</div> */}
                   <p className="testimonial-text">{quote}</p>
                   <div className="testimonial-author">

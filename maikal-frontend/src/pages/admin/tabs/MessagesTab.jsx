@@ -22,12 +22,12 @@ export default function MessagesTab() {
             <thead><tr><th>Name</th><th>Mobile</th><th>Email</th><th>Message</th><th>Date</th></tr></thead>
             <tbody>
               {msgs.map(m => (
-                <tr key={m.id}>
+                <tr key={m._id || m.id}>
                   <td><strong>{m.name || '—'}</strong></td>
                   <td>{m.mobile || '—'}</td>
                   <td>{m.email || '—'}</td>
                   <td style={{maxWidth:250}}>{m.message}</td>
-                  <td style={{fontSize:'.78rem',color:'#6b7280'}}>{new Date(m.created_at).toLocaleDateString('en-IN')}</td>
+                  <td style={{fontSize:'.78rem',color:'#6b7280'}}>{new Date(m.createdAt || m.created_at).toLocaleDateString('en-IN')}</td>
                 </tr>
               ))}
               {!msgs.length && <tr><td colSpan={5} style={{textAlign:'center',padding:24,color:'#6b7280'}}>No messages yet</td></tr>}

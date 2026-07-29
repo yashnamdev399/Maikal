@@ -31,12 +31,12 @@ export default function HeroTab() {
     setSaving(true);
     try {
       // Save text content
-      await api.put(`/hero/${editing.id}`, form);
+      await api.put(`/hero/${editing._id || editing.id}`, form);
       // Upload image if selected
       if (imgFile) {
         const fd = new FormData();
         fd.append('image', imgFile);
-        await api.upload('PUT', `/hero/${editing.id}/image`, fd);
+        await api.upload('PUT', `/hero/${editing._id || editing.id}/image`, fd);
       }
       toast('Slide updated!');
       setModal(false); load();
@@ -54,7 +54,7 @@ export default function HeroTab() {
       </p>
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:16}}>
         {slides.map((s, i) => (
-          <div key={s.id} style={{background:'#fff',borderRadius:12,overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,.08)',border:'1px solid #e5e7eb'}}>
+          <div key={s._id || s.id} style={{background:'#fff',borderRadius:12,overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,.08)',border:'1px solid #e5e7eb'}}>
             {s.image_url
               ? <img src={s.image_url} alt="" style={{width:'100%',height:160,objectFit:'cover'}}/>
               : <div style={{width:'100%',height:160,background:'linear-gradient(135deg,#0a7a6e,#1a6fa8)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'2rem'}}>🌾</div>

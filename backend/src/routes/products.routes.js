@@ -39,7 +39,7 @@ router.post('/', authenticate, upload.single('image'), async (req, res) => {
     const product = await Product.create({
       name_en, name_hi, description_en, description_hi,
       price: parseFloat(price), unit, category, image_url,
-      in_stock: in_stock !== '0' && in_stock !== 'false'
+      in_stock: String(in_stock) !== '0' && String(in_stock) !== 'false' && in_stock !== false && in_stock !== 0
     });
     res.status(201).json({ success: true, data: product });
   } catch (err) {
@@ -64,7 +64,7 @@ router.put('/:id', authenticate, upload.single('image'), async (req, res) => {
     await Product.findByIdAndUpdate(req.params.id, {
       name_en, name_hi, description_en, description_hi,
       price: parseFloat(price), unit, category, image_url,
-      in_stock: in_stock !== '0' && in_stock !== 'false'
+      in_stock: String(in_stock) !== '0' && String(in_stock) !== 'false' && in_stock !== false && in_stock !== 0
     });
     res.json({ success: true, message: 'Product updated' });
   } catch (err) {

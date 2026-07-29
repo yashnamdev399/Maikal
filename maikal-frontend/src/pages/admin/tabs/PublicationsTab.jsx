@@ -32,7 +32,7 @@ export default function PublicationsTab() {
       Object.entries(form).forEach(([k, v]) => fd.append(k, v));
       if (coverFile) fd.append('cover', coverFile);
       if (pdfFile)   fd.append('pdf', pdfFile);
-      if (editing) await api.upload('PUT', `/publications/${editing.id}`, fd);
+      if (editing) await api.upload('PUT', `/publications/${editing._id || editing.id}`, fd);
       else         await api.upload('POST', '/publications', fd);
       toast(editing ? 'Publication updated!' : 'Publication added!');
       setModal(false); load();
@@ -58,14 +58,14 @@ export default function PublicationsTab() {
         <thead><tr><th>Cover</th><th>Title</th><th>PDF</th><th>Date</th><th>Actions</th></tr></thead>
         <tbody>
           {pubs.map(p => (
-            <tr key={p.id}>
+            <tr key={p._id || p.id}>
               <td>{p.cover_url && <img src={p.cover_url} alt="" style={{width:48,height:64,objectFit:'cover',borderRadius:4}}/>}</td>
               <td><strong>{p.title_en}</strong><br/><small style={{color:'#6b7280'}}>{p.title_hi}</small></td>
               <td><a href={p.pdf_url} target="_blank" rel="noreferrer" style={{color:'#0a7a6e',fontSize:'.82rem'}}>⬇️ Download</a></td>
-              <td style={{fontSize:'.82rem',color:'#6b7280'}}>{new Date(p.created_at).toLocaleDateString('en-IN')}</td>
+              <td style={{fontSize:'.82rem',color:'#6b7280'}}>{new Date(p.createdAt || p.created_at).toLocaleDateString('en-IN')}</td>
               <td className="action-btns">
                 <button className="edit-btn" onClick={() => open(p)}>Edit</button>
-                <button className="del-btn"  onClick={() => del(p.id)}>Delete</button>
+                <button className="del-btn"  onClick={() => del(p._id || p.id)}>Delete</button>
               </td>
             </tr>
           ))}

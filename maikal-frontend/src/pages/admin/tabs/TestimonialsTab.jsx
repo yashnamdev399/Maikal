@@ -41,7 +41,7 @@ export default function TestimonialsTab() {
     setSaving(true);
     try {
       const body = { ...form, rating: parseInt(form.rating), sort_order: parseInt(form.sort_order), is_active: form.is_active === '1' };
-      if (editing) await api.put(`/testimonials/${editing.id}`, body);
+      if (editing) await api.put(`/testimonials/${editing._id || editing.id}`, body);
       else         await api.post('/testimonials', body);
       toast(editing ? 'Testimonial updated!' : 'Testimonial added!');
       setModal(false); load();
@@ -57,7 +57,7 @@ export default function TestimonialsTab() {
 
   const toggle = async (item) => {
     try {
-      await api.put(`/testimonials/${item.id}`, { ...item, is_active: !item.is_active });
+      await api.put(`/testimonials/${item._id || item.id}`, { ...item, is_active: !item.is_active });
       toast(item.is_active ? 'Hidden from website' : 'Now visible on website');
       load();
     } catch (e) { toast(e.message, 'error'); }
@@ -90,7 +90,7 @@ export default function TestimonialsTab() {
         </thead>
         <tbody>
           {items.map(item => (
-            <tr key={item.id}>
+            <tr key={item._id || item.id}>
               <td style={{ fontSize:'1.4rem', textAlign:'center' }}>{item.avatar || '👤'}</td>
               <td>
                 <strong>{item.name}</strong>
@@ -117,7 +117,7 @@ export default function TestimonialsTab() {
                 >
                   {item.is_active ? 'Hide' : 'Show'}
                 </button>
-                <button className="del-btn" onClick={() => del(item.id)}>Delete</button>
+                <button className="del-btn" onClick={() => del(item._id || item.id)}>Delete</button>
               </td>
             </tr>
           ))}

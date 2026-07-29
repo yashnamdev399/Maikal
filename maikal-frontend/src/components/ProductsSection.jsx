@@ -83,7 +83,7 @@ export default function ProductsSection() {
         {loading
           ? <div className="spinner-wrap"><div className="spinner" /></div>
           : visible.length
-            ? <div className="products-grid">{visible.map(p => <ProductCard key={p.id} p={p} lang={lang} />)}</div>
+            ? <div className="products-grid">{visible.map(p => <ProductCard key={p._id || p.id} p={p} lang={lang} />)}</div>
             : <div className="empty-state"><div className="icon">🌿</div><p>{t('No products found', 'कोई उत्पाद नहीं मिला')}</p></div>
         }
       </div>

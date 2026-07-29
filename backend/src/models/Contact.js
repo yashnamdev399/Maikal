@@ -5,6 +5,6 @@ const contactSchema = new mongoose.Schema({
   email:   { type: String, default: null },
   mobile:  { type: String, default: null },
   message: { type: String, default: null },
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 module.exports = mongoose.model('Contact', contactSchema);

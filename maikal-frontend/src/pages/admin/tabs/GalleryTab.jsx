@@ -43,9 +43,9 @@ export default function GalleryTab() {
       </div>
       <div className="gallery-admin-grid">
         {imgs.map(g => (
-          <div key={g.id} className="gallery-admin-item">
+          <div key={g._id || g.id} className="gallery-admin-item">
             <img src={g.image_url} alt={g.caption_en || ''} onError={e => { e.target.src='https://via.placeholder.com/160x160?text=Image'; }} />
-            <button className="del-overlay" onClick={() => del(g.id)} title="Delete">🗑</button>
+            <button className="del-overlay" onClick={() => del(g._id || g.id)} title="Delete">🗑</button>
           </div>
         ))}
         {!imgs.length && <p style={{padding:20,color:'#6b7280'}}>No images yet. Add some!</p>}
