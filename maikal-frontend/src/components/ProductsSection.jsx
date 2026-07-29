@@ -22,7 +22,6 @@ function ProductCard({ p, lang }) {
         <span className={`product-badge${p.in_stock ? '' : ' out'}`}>
           {p.in_stock ? (lang === 'hi' ? 'उपलब्ध' : 'In Stock') : (lang === 'hi' ? 'अनुपलब्ध' : 'Out of Stock')}
         </span>
-        {/* <button className="product-wishlist" title="Wishlist">♡</button> */}
       </div>
       <div className="product-body">
         <div className="product-category">{p.category || ''}</div>
@@ -45,8 +44,8 @@ function ProductCard({ p, lang }) {
 
 export default function ProductsSection() {
   const { lang, t } = useLang();
-  const [all, setAll]     = useState([]);
-  const [cat, setCat]     = useState('');
+  const [all, setAll]         = useState([]);
+  const [cat, setCat]         = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -56,8 +55,15 @@ export default function ProductsSection() {
       .finally(() => setLoading(false));
   }, []);
 
-  const cats    = [...new Set(all.map(p => p.category).filter(Boolean))];
-  const visible = cat ? all.filter(p => p.category === cat) : all;
+  const cats = [...new Set(all.map(p => (p.category || '').trim()).filter(Boolean))];
+
+  const visible = cat
+    ? all.filter(p => (p.category || '').trim().toLowerCase() === cat.trim().toLowerCase())
+    : all;
+
+  const handleCatChange = (selectedCat) => {
+    setCat(selectedCat);
+  };
 
   return (
     <section className="products-section" id="products">
@@ -69,14 +75,17 @@ export default function ProductsSection() {
       </div>
 
       <div className="category-tabs">
-        <button className={`cat-tab${cat === '' ? ' active' : ''}`} onClick={() => setCat('')}>
-          {t('All', 'सभी')}
+        <button className={`cat-tab${cat === '' ? ' active' : ''}`} onClick={() => handleCatChange('')}>
+          {t('All', 'सभी')} ({all.length})
         </button>
-        {cats.map(c => (
-          <button key={c} className={`cat-tab${cat === c ? ' active' : ''}`} onClick={() => setCat(c)}>
-            {CAT_EMOJI[c] || '🌿'} {lang === 'hi' ? (HI_LABELS[c] || c) : c}
-          </button>
-        ))}
+        {cats.map(c => {
+          const count = all.filter(p => (p.category || '').trim().toLowerCase() === c.toLowerCase()).length;
+          return (
+            <button key={c} className={`cat-tab${cat.toLowerCase() === c.toLowerCase() ? ' active' : ''}`} onClick={() => handleCatChange(c)}>
+              {CAT_EMOJI[c] || '🌿'} {lang === 'hi' ? (HI_LABELS[c] || c) : c} ({count})
+            </button>
+          );
+        })}
       </div>
 
       <div id="products-container">

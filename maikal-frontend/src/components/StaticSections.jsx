@@ -139,6 +139,16 @@ export function Testimonials() {
   const { lang, t } = useLang();
   const [items, setItems]     = useState([]);
   const [loading, setLoading] = useState(true);
+  const [idx, setIdx]         = useState(0);
+
+  const getSpv = () => (window.innerWidth <= 768 ? 1 : 3);
+  const [slidesPerView, setSPV] = useState(getSpv());
+
+  useEffect(() => {
+    const onResize = () => setSPV(getSpv());
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     fetch('/api/testimonials')
@@ -149,6 +159,16 @@ export function Testimonials() {
   }, []);
 
   const cards = items.length ? items : STATIC_TESTIMONIALS;
+  const maxIdx = Math.max(0, cards.length - slidesPerView);
+
+  const move = (dir) => setIdx(i => {
+    let next = i + dir;
+    if (next > maxIdx) next = 0;
+    if (next < 0) next = maxIdx;
+    return next;
+  });
+
+  const pct = (100 / slidesPerView) * idx;
 
   return (
     <section className="testimonials-section">
@@ -159,30 +179,45 @@ export function Testimonials() {
         <div className="section-divider"/>
       </div>
 
-      {loading
-        ? <div className="spinner-wrap"><div className="spinner"/></div>
-        : <div className="testimonials-grid">
+      {loading ? (
+        <div className="spinner-wrap"><div className="spinner"/></div>
+      ) : (
+        <div className="farm-carousel-wrap">
+          <div className="farm-carousel" style={{ transform: `translateX(-${pct}%)` }}>
             {cards.map(c => {
               const quote = lang === 'hi' ? (c.quote_hi || c.quote_en) : c.quote_en;
               const meta  = lang === 'hi' ? (c.meta_hi  || c.meta_en  || '') : (c.meta_en || '');
               const stars = '★'.repeat(Math.min(5, Math.max(1, c.rating || 5)));
               return (
-                <div key={c._id || c.id} className="testimonial-card">
-                  {/* <div className="testimonial-quote">"</div> */}
-                  <p className="testimonial-text">{quote}</p>
-                  <div className="testimonial-author">
-                    <div className="testimonial-avatar">{c.avatar || '👤'}</div>
-                    <div>
-                      <div className="testimonial-name">{c.name}</div>
-                      <div className="testimonial-meta">{meta}</div>
-                      <div className="testimonial-stars">{stars}</div>
+                <div key={c._id || c.id} className="farm-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%`, padding: '0 10px' }}>
+                  <div className="testimonial-card" style={{ height: '100%' }}>
+                    <p className="testimonial-text">{quote}</p>
+                    <div className="testimonial-author">
+                      <div className="testimonial-avatar">{c.avatar || '👤'}</div>
+                      <div>
+                        <div className="testimonial-name">{c.name}</div>
+                        <div className="testimonial-meta">{meta}</div>
+                        <div className="testimonial-stars">{stars}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
               );
             })}
           </div>
-      }
+          {maxIdx > 0 && (
+            <>
+              <button className="carousel-btn carousel-prev" onClick={() => move(-1)}>&#8249;</button>
+              <button className="carousel-btn carousel-next" onClick={() => move(1)}>&#8250;</button>
+              <div className="carousel-dots">
+                {Array.from({ length: maxIdx + 1 }).map((_, i) => (
+                  <button key={i} className={`carousel-dot${i === idx ? ' active' : ''}`} onClick={() => setIdx(i)} />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </section>
   );
 }

@@ -6,25 +6,53 @@ import Modal from '../Modal';
 const EMPTY = { image_url:'', caption_en:'', caption_hi:'', category:'' };
 
 export default function GalleryTab() {
-  const [imgs, setImgs]       = useState([]);
-  const [modal, setModal]     = useState(false);
-  const [form, setForm]       = useState(EMPTY);
-  const [saving, setSaving]   = useState(false);
+  const [imgs, setImgs]         = useState([]);
+  const [modal, setModal]       = useState(false);
+  const [form, setForm]         = useState(EMPTY);
+  const [file, setFile]         = useState(null);
+  const [preview, setPreview]   = useState('');
+  const [saving, setSaving]     = useState(false);
 
   const load = () => api.get('/gallery').then(d => setImgs(d.data || [])).catch(() => {});
   useEffect(() => { load(); }, []);
 
-  const open = () => { setForm(EMPTY); setModal(true); };
+  const open = () => {
+    setForm(EMPTY);
+    setFile(null);
+    setPreview('');
+    setModal(true);
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setPreview(URL.createObjectURL(selectedFile));
+    }
+  };
 
   const save = async () => {
-    if (!form.image_url) { toast('Image URL is required', 'error'); return; }
+    if (!file && !form.image_url) {
+      toast('Please select an image file to upload', 'error');
+      return;
+    }
     setSaving(true);
     try {
-      await api.post('/gallery', { ...form, caption_en: form.caption_en||null, caption_hi: form.caption_hi||null, category: form.category||null });
+      const formData = new FormData();
+      if (file) formData.append('image', file);
+      if (form.caption_en) formData.append('caption_en', form.caption_en);
+      if (form.caption_hi) formData.append('caption_hi', form.caption_hi);
+      if (form.category) formData.append('category', form.category);
+
+      await api.post('/gallery', formData);
       toast('Image added!');
-      setModal(false); load();
-    } catch (e) { toast(e.message, 'error'); }
-    finally { setSaving(false); }
+      setModal(false);
+      load();
+    } catch (e) {
+      toast(e.message || 'Error uploading image', 'error');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const del = async (id) => {
@@ -53,7 +81,15 @@ export default function GalleryTab() {
 
       {modal && (
         <Modal title="Add Gallery Image" onClose={() => setModal(false)} onSave={save} saving={saving}>
-          <div className="form-group"><label>Image URL *</label><input type="url" value={form.image_url} onChange={set('image_url')} placeholder="https://…" required /></div>
+          <div className="form-group">
+            <label>Upload Image *</label>
+            <input type="file" accept="image/*" onChange={handleFileChange} required />
+            {preview && (
+              <div style={{ marginTop: 8 }}>
+                <img src={preview} alt="Preview" style={{ width: 120, height: 90, objectFit: 'cover', borderRadius: 6 }} />
+              </div>
+            )}
+          </div>
           <div className="form-group"><label>Caption (English)</label><input value={form.caption_en} onChange={set('caption_en')} /></div>
           <div className="form-group"><label>कैप्शन (हिंदी)</label><input value={form.caption_hi} onChange={set('caption_hi')} /></div>
           <div className="form-group"><label>Category</label><input value={form.category} onChange={set('category')} placeholder="Farm, Event, Products…" /></div>

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Gallery = require('../models/Gallery');
 const { authenticate } = require('../middleware/auth');
+const upload = require('../utils/upload');
 
 // GET all gallery images (public)
 router.get('/', async (req, res) => {
@@ -14,11 +15,13 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST add image (admin)
-router.post('/', authenticate, async (req, res) => {
+// POST add image (admin) — supports file upload or image_url
+router.post('/', authenticate, upload.single('image'), async (req, res) => {
   try {
-    const { image_url, caption_en, caption_hi, category } = req.body;
-    if (!image_url) return res.status(400).json({ success: false, message: 'image_url required' });
+    const { caption_en, caption_hi, category } = req.body;
+    const image_url = req.file ? `/uploads/images/${req.file.filename}` : req.body.image_url;
+    if (!image_url) return res.status(400).json({ success: false, message: 'Image file or image_url is required' });
+
     const image = await Gallery.create({ image_url, caption_en, caption_hi, category });
     res.status(201).json({ success: true, data: image });
   } catch (err) {

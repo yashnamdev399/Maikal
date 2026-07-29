@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLang } from '../context/LangContext';
+import { api } from '../utils/api';
 
-const SLIDES = [
+const STATIC_SLIDES = [
   { img: '/images/equalstock-7KhazgCqCNA-unsplash.jpg',          icon: '👩‍🌾', en: 'Natural Farmers of Maa Narmada',  hi: 'माँ नर्मदा के प्राकृतिक किसान' },
   { img: '/images/rajesh-ram-HOOKgN_zIY8-unsplash.jpg',           icon: '🚜',   en: 'Natural Farming Methods',   hi: 'प्राकृतिक खेती के तरीके' },
   { img: '/images/sanjoy-saha-Lk92eqwxMBc-unsplash.jpg',          icon: '🏔️',  en: 'Maa Narmada’s Valley Fields',     hi: 'माँ नर्मदा घाटी के खेत' },
@@ -13,8 +14,10 @@ const SLIDES = [
 ];
 
 export default function FarmCarousel() {
-  const { t } = useLang();
+  const { lang, t } = useLang();
   const [idx, setIdx] = useState(0);
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
   const timerRef = useRef(null);
 
   const spv = () => window.innerWidth <= 768 ? 1 : 3;
@@ -27,11 +30,38 @@ export default function FarmCarousel() {
   }, []);
 
   useEffect(() => {
+    api.get('/activities')
+      .then(res => {
+        const activities = res.data || [];
+        // Filter activities that have image_url
+        const fetchedSlides = activities
+          .filter(a => a.image_url)
+          .map(a => ({
+            img: a.image_url,
+            icon: '🌱',
+            en: a.title_en || 'Activity Photo',
+            hi: a.title_hi || 'गतिविधि फोटो',
+          }));
+
+        if (fetchedSlides.length > 0) {
+          setSlides(fetchedSlides);
+        } else {
+          setSlides(STATIC_SLIDES);
+        }
+      })
+      .catch(() => {
+        setSlides(STATIC_SLIDES);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (slides.length <= slidesPerView) return;
     timerRef.current = setInterval(() => move(1), 3800);
     return () => clearInterval(timerRef.current);
-  }, [slidesPerView]);
+  }, [slidesPerView, slides]);
 
-  const maxIdx = SLIDES.length - slidesPerView;
+  const maxIdx = Math.max(0, slides.length - slidesPerView);
   const move = (dir) => setIdx(i => {
     let next = i + dir;
     if (next > maxIdx) next = 0;
@@ -48,26 +78,35 @@ export default function FarmCarousel() {
         <h2>{t("Straight From Nature's Heart", 'प्रकृति के हृदय से सीधे')}</h2>
         <p>{t('Real farms, real people, real purity', 'असली खेत, असली लोग, असली शुद्धता')}</p>
       </div>
-      <div className="farm-carousel-wrap">
-        <div className="farm-carousel" style={{ transform: `translateX(-${pct}%)` }}>
-          {SLIDES.map((s, i) => (
-            <div key={i} className="farm-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%` }}>
-              <img src={s.img} alt={s.en} />
-              <div className="farm-slide-caption">
-                <span>{s.icon}</span>
-                <span>{t(s.en, s.hi)}</span>
+
+      {loading ? (
+        <div className="spinner-wrap"><div className="spinner" /></div>
+      ) : (
+        <div className="farm-carousel-wrap">
+          <div className="farm-carousel" style={{ transform: `translateX(-${pct}%)` }}>
+            {slides.map((s, i) => (
+              <div key={i} className="farm-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%` }}>
+                <img src={s.img} alt={lang === 'hi' ? s.hi : s.en} />
+                <div className="farm-slide-caption">
+                  <span>{s.icon}</span>
+                  <span>{lang === 'hi' ? s.hi : s.en}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          {maxIdx > 0 && (
+            <>
+              <button className="carousel-btn carousel-prev" onClick={() => move(-1)}>&#8249;</button>
+              <button className="carousel-btn carousel-next" onClick={() => move(1)}>&#8250;</button>
+              <div className="carousel-dots">
+                {Array.from({ length: maxIdx + 1 }).map((_, i) => (
+                  <button key={i} className={`carousel-dot${i === idx ? ' active' : ''}`} onClick={() => setIdx(i)} />
+                ))}
+              </div>
+            </>
+          )}
         </div>
-        <button className="carousel-btn carousel-prev" onClick={() => move(-1)}>&#8249;</button>
-        <button className="carousel-btn carousel-next" onClick={() => move(1)}>&#8250;</button>
-        <div className="carousel-dots">
-          {Array.from({ length: maxIdx + 1 }).map((_, i) => (
-            <button key={i} className={`carousel-dot${i === idx ? ' active' : ''}`} onClick={() => setIdx(i)} />
-          ))}
-        </div>
-      </div>
+      )}
     </section>
   );
 }

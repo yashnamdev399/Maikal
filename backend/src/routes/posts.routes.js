@@ -4,6 +4,7 @@ const { body } = require('express-validator');
 const Post = require('../models/Post');
 const { authenticate } = require('../middleware/auth');
 const validate = require('../middleware/validate');
+const upload = require('../utils/upload');
 
 // GET all posts (public)
 router.get('/', async (req, res) => {
@@ -16,26 +17,26 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST create post (admin)
-router.post('/', authenticate,
-  [body('title_en').optional().trim(), body('title_hi').optional().trim()],
-  validate,
-  async (req, res) => {
-    try {
-      const { title_en, title_hi, content_en, content_hi, image_url } = req.body;
-      const post = await Post.create({ title_en, title_hi, content_en, content_hi, image_url });
-      res.status(201).json({ success: true, data: post });
-    } catch (err) {
-      res.status(500).json({ success: false, message: err.message });
-    }
-  }
-);
-
-// PUT update post (admin)
-router.put('/:id', authenticate, async (req, res) => {
+// POST create post (admin) — supports file upload
+router.post('/', authenticate, upload.single('image'), async (req, res) => {
   try {
-    const { title_en, title_hi, content_en, content_hi, image_url } = req.body;
-    await Post.findByIdAndUpdate(req.params.id, { title_en, title_hi, content_en, content_hi, image_url });
+    const { title_en, title_hi, content_en, content_hi } = req.body;
+    const image_url = req.file ? `/uploads/images/${req.file.filename}` : (req.body.image_url || null);
+    const post = await Post.create({ title_en, title_hi, content_en, content_hi, image_url });
+    res.status(201).json({ success: true, data: post });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// PUT update post (admin) — supports file upload
+router.put('/:id', authenticate, upload.single('image'), async (req, res) => {
+  try {
+    const { title_en, title_hi, content_en, content_hi } = req.body;
+    const update = { title_en, title_hi, content_en, content_hi };
+    if (req.file) update.image_url = `/uploads/images/${req.file.filename}`;
+    else if (req.body.image_url !== undefined) update.image_url = req.body.image_url || null;
+    await Post.findByIdAndUpdate(req.params.id, update);
     res.json({ success: true, message: 'Post updated' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
