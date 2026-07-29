@@ -6,8 +6,9 @@ const { authenticate } = require('../middleware/auth');
 // GET all active testimonials (public)
 router.get('/', async (req, res) => {
   try {
-    const testimonials = await Testimonial.find({ is_active: true }).sort({ sort_order: 1, createdAt: -1 });
-    res.json({ success: true, data: testimonials });
+    const testimonials = await Testimonial.find({ is_active: true }).sort({ sort_order: 1, createdAt: -1 }).lean();
+    const formatted = testimonials.map(t => ({ ...t, id: (t._id || t.id)?.toString(), _id: (t._id || t.id)?.toString() }));
+    res.json({ success: true, data: formatted });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -16,8 +17,9 @@ router.get('/', async (req, res) => {
 // GET all testimonials including inactive (admin)
 router.get('/all', authenticate, async (req, res) => {
   try {
-    const testimonials = await Testimonial.find().sort({ sort_order: 1, createdAt: -1 });
-    res.json({ success: true, data: testimonials });
+    const testimonials = await Testimonial.find().sort({ sort_order: 1, createdAt: -1 }).lean();
+    const formatted = testimonials.map(t => ({ ...t, id: (t._id || t.id)?.toString(), _id: (t._id || t.id)?.toString() }));
+    res.json({ success: true, data: formatted });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

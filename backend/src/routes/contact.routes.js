@@ -17,8 +17,9 @@ router.post('/', async (req, res) => {
 // GET all messages (admin)
 router.get('/', authenticate, async (req, res) => {
   try {
-    const contacts = await Contact.find().sort({ createdAt: -1 });
-    res.json({ success: true, data: contacts });
+    const contacts = await Contact.find().sort({ createdAt: -1 }).lean();
+    const formatted = contacts.map(c => ({ ...c, id: (c._id || c.id)?.toString(), _id: (c._id || c.id)?.toString() }));
+    res.json({ success: true, data: formatted });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

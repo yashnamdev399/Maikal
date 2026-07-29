@@ -31,8 +31,13 @@ export default function ProductsTab() {
       Object.entries(form).forEach(([k, v]) => fd.append(k, v));
       if (imgFile) fd.append('image', imgFile);
       else if (editing?.image_url) fd.append('image_url', editing.image_url);
-      if (editing) await api.upload('PUT', `/products/${editing._id || editing.id}`, fd);
-      else         await api.upload('POST', '/products', fd);
+      if (editing) {
+        const prodId = editing._id || editing.id || editing.product_id;
+        if (!prodId) { toast('Product ID missing. Please refresh page.', 'error'); return; }
+        await api.upload('PUT', `/products/${prodId}`, fd);
+      } else {
+        await api.upload('POST', '/products', fd);
+      }
       toast(editing ? 'Product updated!' : 'Product added!');
       setModal(false); load();
     } catch (e) { toast(e.message, 'error'); }
@@ -40,6 +45,7 @@ export default function ProductsTab() {
   };
 
   const del = async (id) => {
+    if (!id) { toast('Product ID missing. Please refresh page.', 'error'); return; }
     if (!confirm('Delete this product?')) return;
     try { await api.delete(`/products/${id}`); toast('Deleted'); load(); }
     catch (e) { toast(e.message, 'error'); }

@@ -6,8 +6,9 @@ const { authenticate } = require('../middleware/auth');
 // GET all gallery images (public)
 router.get('/', async (req, res) => {
   try {
-    const images = await Gallery.find().sort({ createdAt: -1 });
-    res.json({ success: true, data: images });
+    const images = await Gallery.find().sort({ createdAt: -1 }).lean();
+    const formatted = images.map(g => ({ ...g, id: (g._id || g.id)?.toString(), _id: (g._id || g.id)?.toString() }));
+    res.json({ success: true, data: formatted });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

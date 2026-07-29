@@ -11,8 +11,13 @@ router.get('/', async (req, res) => {
   try {
     const { category } = req.query;
     const filter = category ? { category } : {};
-    const products = await Product.find(filter).sort({ category: 1, name_en: 1 });
-    res.json({ success: true, data: products });
+    const products = await Product.find(filter).sort({ category: 1, name_en: 1 }).lean();
+    const formatted = products.map(p => ({
+      ...p,
+      id: (p._id || p.id)?.toString(),
+      _id: (p._id || p.id)?.toString()
+    }));
+    res.json({ success: true, data: formatted });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

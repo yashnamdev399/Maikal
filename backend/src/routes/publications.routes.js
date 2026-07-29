@@ -16,8 +16,9 @@ router.get('/', async (req, res) => {
           { title_hi: { $regex: search, $options: 'i' } }
         ]}
       : {};
-    const publications = await Publication.find(filter).sort({ createdAt: -1 });
-    res.json({ success: true, data: publications });
+    const publications = await Publication.find(filter).sort({ createdAt: -1 }).lean();
+    const formatted = publications.map(p => ({ ...p, id: (p._id || p.id)?.toString(), _id: (p._id || p.id)?.toString() }));
+    res.json({ success: true, data: formatted });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

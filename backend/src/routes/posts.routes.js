@@ -8,8 +8,9 @@ const validate = require('../middleware/validate');
 // GET all posts (public)
 router.get('/', async (req, res) => {
   try {
-    const posts = await Post.find().sort({ published_at: -1 });
-    res.json({ success: true, data: posts });
+    const posts = await Post.find().sort({ published_at: -1 }).lean();
+    const formatted = posts.map(p => ({ ...p, id: (p._id || p.id)?.toString(), _id: (p._id || p.id)?.toString() }));
+    res.json({ success: true, data: formatted });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

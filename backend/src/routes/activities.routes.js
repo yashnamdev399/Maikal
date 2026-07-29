@@ -9,8 +9,9 @@ const upload = require('../utils/upload');
 // GET all activities (public)
 router.get('/', async (req, res) => {
   try {
-    const activities = await Activity.find().sort({ createdAt: -1 });
-    res.json({ success: true, data: activities });
+    const activities = await Activity.find().sort({ createdAt: -1 }).lean();
+    const formatted = activities.map(a => ({ ...a, id: (a._id || a.id)?.toString(), _id: (a._id || a.id)?.toString() }));
+    res.json({ success: true, data: formatted });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -19,9 +20,10 @@ router.get('/', async (req, res) => {
 // GET single activity (public)
 router.get('/:id', async (req, res) => {
   try {
-    const activity = await Activity.findById(req.params.id);
+    const activity = await Activity.findById(req.params.id).lean();
     if (!activity) return res.status(404).json({ success: false, message: 'Not found' });
-    res.json({ success: true, data: activity });
+    const formatted = { ...activity, id: (activity._id || activity.id)?.toString(), _id: (activity._id || activity.id)?.toString() };
+    res.json({ success: true, data: formatted });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

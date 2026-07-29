@@ -9,8 +9,9 @@ const upload = require('../utils/upload');
 // GET all hero slides (public)
 router.get('/', async (req, res) => {
   try {
-    const slides = await HeroSlide.find().sort({ sort_order: 1 });
-    res.json({ success: true, data: slides });
+    const slides = await HeroSlide.find().sort({ sort_order: 1 }).lean();
+    const formatted = slides.map(s => ({ ...s, id: (s._id || s.id)?.toString(), _id: (s._id || s.id)?.toString() }));
+    res.json({ success: true, data: formatted });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
