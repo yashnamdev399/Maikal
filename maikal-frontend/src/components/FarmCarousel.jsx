@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLang } from '../context/LangContext';
 import { api } from '../utils/api';
-import Lightbox from './Lightbox';
+import PostModal from './PostModal';
 
 const STATIC_SLIDES = [
   { img: '/images/equalstock-7KhazgCqCNA-unsplash.jpg',          icon: '👩‍🌾', en: 'Natural Farmers of Maa Narmada',  hi: 'माँ नर्मदा के प्राकृतिक किसान' },
@@ -36,14 +36,16 @@ export default function FarmCarousel() {
     api.get('/activities')
       .then(res => {
         const activities = res.data || [];
-        // Filter activities that have image_url
         const fetchedSlides = activities
-          .filter(a => a.image_url)
+          .filter(a => a.images && a.images.length > 0)
           .map(a => ({
-            img: a.image_url,
+            ...a,
+            img: a.images[0],
             icon: '🌱',
-            en: a.title_en || 'Activity Photo',
-            hi: a.title_hi || 'गतिविधि फोटो',
+            en: a.title_en || 'Activity',
+            hi: a.title_hi || 'गतिविधि',
+            content_en: a.content_en,
+            content_hi: a.content_hi,
           }));
 
         if (fetchedSlides.length > 0) {
@@ -86,7 +88,7 @@ export default function FarmCarousel() {
         <div className="spinner-wrap"><div className="spinner" /></div>
       ) : (
         <div className="farm-carousel-wrap">
-          <div className="farm-carousel" style={{ transform: `translateX(-${pct}%)` }}>
+          <div className="farm-carousel" style={{ transform: `translateX(-${pct}%)`, justifyContent: slides.length < slidesPerView ? 'center' : 'flex-start' }}>
             {slides.map((s, i) => (
               <div key={i} className="farm-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%`, cursor: 'pointer' }} onClick={() => setLightboxIndex(i)}>
                 <img src={s.img} alt={lang === 'hi' ? s.hi : s.en} />
@@ -112,9 +114,9 @@ export default function FarmCarousel() {
       )}
       
       {lightboxIndex !== null && (
-        <Lightbox 
-          images={slides.map(s => ({ image_url: s.img, caption: lang === 'hi' ? s.hi : s.en }))} 
-          initialIndex={lightboxIndex} 
+        <PostModal 
+          p={slides[lightboxIndex]} 
+          lang={lang} 
           onClose={() => setLightboxIndex(null)} 
         />
       )}

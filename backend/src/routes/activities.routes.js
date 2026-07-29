@@ -61,13 +61,7 @@ router.put('/:id', authenticate, upload.array('images', 10), async (req, res) =>
 // DELETE activity (admin)
 router.delete('/:id', authenticate, async (req, res) => {
   try {
-    const existing = await Activity.findById(req.params.id);
-    if (existing) {
-      (existing.images || []).forEach(imgPath => {
-        const full = path.join(__dirname, '../../', imgPath);
-        if (fs.existsSync(full)) fs.unlinkSync(full);
-      });
-    }
+    // We no longer physically delete the file
     await Activity.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'Activity deleted' });
   } catch (err) {

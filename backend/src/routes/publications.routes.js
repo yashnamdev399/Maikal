@@ -55,11 +55,9 @@ router.put('/:id', authenticate, upload.fields([
     let pdf_url = existing.pdf_url;
 
     if (req.files?.cover?.[0]) {
-      if (existing.cover_url) { try { fs.unlinkSync(path.join(__dirname, '../../', existing.cover_url)); } catch {} }
       cover_url = '/uploads/images/' + req.files.cover[0].filename;
     }
     if (req.files?.pdf?.[0]) {
-      if (existing.pdf_url) { try { fs.unlinkSync(path.join(__dirname, '../../', existing.pdf_url)); } catch {} }
       pdf_url = '/uploads/pdfs/' + req.files.pdf[0].filename;
     }
 
@@ -75,11 +73,7 @@ router.put('/:id', authenticate, upload.fields([
 // DELETE publication (admin)
 router.delete('/:id', authenticate, async (req, res) => {
   try {
-    const existing = await Publication.findById(req.params.id);
-    if (existing) {
-      if (existing.cover_url) { try { fs.unlinkSync(path.join(__dirname, '../../', existing.cover_url)); } catch {} }
-      if (existing.pdf_url) { try { fs.unlinkSync(path.join(__dirname, '../../', existing.pdf_url)); } catch {} }
-    }
+    // We are no longer deleting physical files
     await Publication.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'Publication deleted' });
   } catch (err) {

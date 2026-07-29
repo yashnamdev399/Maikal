@@ -251,6 +251,11 @@ section{padding:76px 5%;}
 .masonry-item:hover img{transform:scale(1.05);}
 .masonry-caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(10,58,53,.8));color:#fff;padding:20px 10px 8px;font-size:.75rem;transform:translateY(100%);transition:transform .3s;}
 .masonry-item:hover .masonry-caption{transform:translateY(0);}
+.gallery-slide-card{height:38vh;max-height:300px;min-height:200px;border-radius:var(--r);overflow:hidden;position:relative;cursor:pointer;box-shadow:var(--sh);transition:all .3s;}
+.gallery-slide-card:hover{transform:translateY(-5px);box-shadow:var(--shl);}
+.gallery-slide-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s;}
+.gallery-slide-card:hover img{transform:scale(1.04);}
+.gallery-slide-caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(10,58,53,.85));color:#fff;padding:22px 12px 10px;font-size:.85rem;font-weight:600;}
 
 /* === TESTIMONIALS === */
 .testimonials-section{background:linear-gradient(135deg,#fef6ee 0%,#f8f6f0 50%,#f0faf8 100%);padding:76px 5%;}

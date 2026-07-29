@@ -21,10 +21,6 @@ router.get('/', async (req, res) => {
 router.put('/:id/image', authenticate, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'Image file required' });
-    const existing = await HeroSlide.findById(req.params.id);
-    if (existing?.image_url?.startsWith('/uploads/')) {
-      try { fs.unlinkSync(path.join(__dirname, '../../', existing.image_url)); } catch {}
-    }
     const image_url = '/uploads/images/' + req.file.filename;
     await HeroSlide.findByIdAndUpdate(req.params.id, { image_url });
     res.json({ success: true, image_url });
@@ -43,6 +39,40 @@ router.put('/:id', authenticate, async (req, res) => {
       tagline_en, tagline_hi, desc_en, desc_hi
     });
     res.json({ success: true, message: 'Slide updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST create hero slide (admin)
+router.post('/', authenticate, upload.single('image'), async (req, res) => {
+  try {
+    const { badge_en, badge_hi, title_en, title_hi, accent_en, accent_hi,
+            tagline_en, tagline_hi, desc_en, desc_hi } = req.body;
+    
+    const count = await HeroSlide.countDocuments();
+    const sort_order = count + 1;
+    
+    let image_url = '/images/equalstock-7KhazgCqCNA-unsplash.jpg'; // default placeholder
+    if (req.file) {
+      image_url = '/uploads/images/' + req.file.filename;
+    }
+    
+    const newSlide = await HeroSlide.create({
+      badge_en, badge_hi, title_en, title_hi, accent_en, accent_hi,
+      tagline_en, tagline_hi, desc_en, desc_hi, sort_order, image_url
+    });
+    res.status(201).json({ success: true, data: newSlide });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// DELETE hero slide (admin)
+router.delete('/:id', authenticate, async (req, res) => {
+  try {
+    await HeroSlide.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Slide deleted' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

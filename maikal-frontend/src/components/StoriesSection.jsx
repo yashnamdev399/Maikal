@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useLang } from '../context/LangContext';
 import { api } from '../utils/api';
 import Lightbox from './Lightbox';
+import PostModal from './PostModal';
 
 function CarouselNav({ idx, maxIdx, move, setIdx }) {
   if (maxIdx <= 0) return null;
@@ -35,33 +36,6 @@ function PostCard({ p, lang, onClick }) {
         <div className="post-title">{title}</div>
         {titleAlt && <div className="post-title-hi">{titleAlt}</div>}
         <div className="post-excerpt">{content}</div>
-      </div>
-    </div>
-  );
-}
-
-function PostModal({ p, lang, onClose }) {
-  if (!p) return null;
-  const title   = lang === 'hi' ? (p.title_hi || p.title_en || '') : (p.title_en || p.title_hi || '');
-  const titleAlt= lang === 'hi' ? (p.title_en || '') : (p.title_hi || '');
-  const content = lang === 'hi' ? (p.content_hi || p.content_en || '') : (p.content_en || p.content_hi || '');
-  const date    = new Date(p.published_at || p.createdAt || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
-  
-  return (
-    <div className="lightbox open" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <button className="lightbox-close" onClick={onClose}>×</button>
-      <div className="post-modal-content" onClick={e => e.stopPropagation()}>
-        {p.image_url && (
-          <div className="post-modal-img">
-            <img src={p.image_url} alt={title} />
-          </div>
-        )}
-        <div className="post-modal-body">
-          <div className="post-date">📅 {date}</div>
-          <h2>{title}</h2>
-          {titleAlt && <h4 className="text-muted">{titleAlt}</h4>}
-          <div className="post-full-content">{content}</div>
-        </div>
       </div>
     </div>
   );
@@ -144,7 +118,7 @@ export default function StoriesSection() {
         <div id="posts-panel" className="farm-carousel-wrap">
           {posts.length ? (
             <>
-              <div className="farm-carousel" style={{ transform: `translateX(-${postPct}%)` }}>
+              <div className="farm-carousel" style={{ transform: `translateX(-${postPct}%)`, justifyContent: posts.length < slidesPerView ? 'center' : 'flex-start' }}>
                 {posts.map(p => (
                   <div key={p._id || p.id} className="carousel-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%`, padding: '0 10px' }}>
                     <PostCard p={p} lang={lang} onClick={() => setActivePost(p)} />
@@ -163,7 +137,7 @@ export default function StoriesSection() {
         <div id="gallery-panel" className="farm-carousel-wrap">
           {gallery.length ? (
             <>
-              <div className="farm-carousel" style={{ transform: `translateX(-${galleryPct}%)` }}>
+              <div className="farm-carousel" style={{ transform: `translateX(-${galleryPct}%)`, justifyContent: gallery.length < slidesPerView ? 'center' : 'flex-start' }}>
                 {gallery.map(g => {
                   const cap = lang === 'hi' ? (g.caption_hi || g.caption_en || '') : (g.caption_en || g.caption_hi || '');
                   return (

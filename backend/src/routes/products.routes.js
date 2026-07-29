@@ -60,9 +60,6 @@ router.put('/:id', authenticate, upload.single('image'), async (req, res) => {
     let image_url = req.body.image_url || null;
     if (req.file) {
       const existing = await Product.findById(req.params.id);
-      if (existing?.image_url?.startsWith('/uploads/')) {
-        try { fs.unlinkSync(path.join(__dirname, '../../', existing.image_url)); } catch {}
-      }
       image_url = '/uploads/images/' + req.file.filename;
     }
 
@@ -81,9 +78,7 @@ router.put('/:id', authenticate, upload.single('image'), async (req, res) => {
 router.delete('/:id', authenticate, async (req, res) => {
   try {
     const existing = await Product.findById(req.params.id);
-    if (existing?.image_url?.startsWith('/uploads/')) {
-      try { fs.unlinkSync(path.join(__dirname, '../../', existing.image_url)); } catch {}
-    }
+    // We no longer physically delete the file
     await Product.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'Product deleted' });
   } catch (err) {

@@ -30,15 +30,23 @@ export default function HeroTab() {
   const save = async () => {
     setSaving(true);
     try {
-      // Save text content
-      await api.put(`/hero/${editing._id || editing.id}`, form);
-      // Upload image if selected
-      if (imgFile) {
-        const fd = new FormData();
-        fd.append('image', imgFile);
-        await api.upload('PUT', `/hero/${editing._id || editing.id}/image`, fd);
+      const fd = new FormData();
+      Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+      if (imgFile) fd.append('image', imgFile);
+
+      if (editing) {
+        // Save text content
+        await api.put(`/hero/${editing._id || editing.id}`, form);
+        // Upload image if selected
+        if (imgFile) {
+          const imgFd = new FormData();
+          imgFd.append('image', imgFile);
+          await api.upload('PUT', `/hero/${editing._id || editing.id}/image`, imgFd);
+        }
+      } else {
+        await api.upload('POST', '/hero', fd);
       }
-      toast('Slide updated!');
+      toast(editing ? 'Slide updated!' : 'Slide added!');
       setModal(false); load();
     } catch (e) { toast(e.message, 'error'); }
     finally { setSaving(false); }
@@ -46,11 +54,36 @@ export default function HeroTab() {
 
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
+  const remove = async (s) => {
+    if (!window.confirm('Delete this slide?')) return;
+    try {
+      await api.delete(`/hero/${s._id || s.id}`);
+      toast('Slide deleted!');
+      load();
+    } catch (e) { toast(e.message, 'error'); }
+  };
+
+  const openNew = () => {
+    setEditing(null);
+    setForm({
+      badge_en: '', badge_hi: '',
+      title_en: '', title_hi: '',
+      accent_en: '', accent_hi: '',
+      tagline_en: '', tagline_hi: '',
+      desc_en: '', desc_hi: '',
+    });
+    setImgFile(null);
+    setModal(true);
+  };
+
   return (
     <div className="tab-panel active">
-      <div className="page-title" style={{marginBottom:16}}>🎨 Hero Slides</div>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16}}>
+        <div className="page-title" style={{marginBottom: 0}}>🎨 Hero Slides</div>
+        <button className="btn-primary" onClick={openNew}>+ Add Slide</button>
+      </div>
       <p style={{color:'#6b7280',fontSize:'.85rem',marginBottom:20}}>
-        Edit the 3 hero slider slides — change images, text, and badges.
+        Edit hero slider slides — change images, text, and badges.
       </p>
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:16}}>
         {slides.map((s, i) => (
@@ -63,7 +96,10 @@ export default function HeroTab() {
               <div style={{fontSize:'.7rem',color:'#0a7a6e',fontWeight:700,textTransform:'uppercase',marginBottom:4}}>Slide {i+1}</div>
               <div style={{fontWeight:700,fontSize:'.9rem',marginBottom:2}}>{s.title_en} {s.accent_en}</div>
               <div style={{fontSize:'.78rem',color:'#6b7280',marginBottom:12}}>{s.badge_en}</div>
-              <button className="edit-btn" style={{width:'100%'}} onClick={() => open(s)}>✏️ Edit Slide</button>
+              <div style={{display:'flex', gap: '8px'}}>
+                <button className="edit-btn" style={{flex: 1}} onClick={() => open(s)}>✏️ Edit</button>
+                <button className="delete-btn" style={{padding: '8px 12px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '6px', cursor: 'pointer'}} onClick={() => remove(s)}>🗑️</button>
+              </div>
             </div>
           </div>
         ))}
@@ -74,11 +110,11 @@ export default function HeroTab() {
         )}
       </div>
 
-      {modal && editing && (
-        <Modal title={`Edit Slide ${editing.sort_order}`} onClose={() => setModal(false)} onSave={save} saving={saving}>
+      {(modal && (editing || !editing)) && (
+        <Modal title={editing ? `Edit Slide ${editing.sort_order || ''}` : 'Add New Slide'} onClose={() => setModal(false)} onSave={save} saving={saving}>
           <div className="form-group">
             <label>Hero Image</label>
-            {editing.image_url && !imgFile && (
+            {editing?.image_url && !imgFile && (
               <img src={editing.image_url} alt="" style={{width:'100%',height:120,objectFit:'cover',borderRadius:8,marginBottom:8}}/>
             )}
             <input type="file" accept="image/*" onChange={e => setImgFile(e.target.files[0])} />
