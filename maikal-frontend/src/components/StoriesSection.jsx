@@ -140,11 +140,17 @@ export default function StoriesSection() {
               <div className="farm-carousel" style={{ transform: `translateX(-${galleryPct}%)`, justifyContent: gallery.length < slidesPerView ? 'center' : 'flex-start' }}>
                 {gallery.map(g => {
                   const cap = lang === 'hi' ? (g.caption_hi || g.caption_en || '') : (g.caption_en || g.caption_hi || '');
+                  const capAlt = lang === 'hi' ? (g.caption_en || '') : (g.caption_hi || '');
                   return (
                     <div key={g._id || g.id} className="carousel-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%`, padding: '0 10px' }}>
-                      <div className="gallery-slide-card" onClick={() => setLightbox(g.image_url)}>
-                        <img src={g.image_url} alt={cap} loading="lazy" />
-                        {cap && <div className="gallery-slide-caption">{cap}</div>}
+                      <div className="post-card" onClick={() => setLightbox(g.image_url)} style={{ cursor: 'pointer' }}>
+                        <div className="post-img">
+                          <img src={g.image_url} alt={cap} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                        <div className="post-body" style={{ padding: '18px' }}>
+                          <div className="post-title">{cap || 'Gallery Photo'}</div>
+                          {capAlt && <div className="post-title-hi">{capAlt}</div>}
+                        </div>
                       </div>
                     </div>
                   );

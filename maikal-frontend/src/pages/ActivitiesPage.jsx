@@ -8,7 +8,7 @@ import Lightbox from '../components/Lightbox';
 function ActivityCard({ act, lang }) {
   const title   = lang === 'hi' ? (act.title_hi || act.title_en || '') : (act.title_en || act.title_hi || '');
   const content = lang === 'hi' ? (act.content_hi || act.content_en || '') : (act.content_en || act.content_hi || '');
-  const images  = (() => { try { return JSON.parse(act.images || '[]'); } catch { return []; } })();
+  const images  = Array.isArray(act.images) ? act.images : [];
   const [imgIdx, setImgIdx] = useState(0);
   const [lightbox, setLightbox] = useState(null);
 

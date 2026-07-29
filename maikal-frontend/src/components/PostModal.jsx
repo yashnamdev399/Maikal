@@ -15,9 +15,18 @@ export default function PostModal({ p, lang, onClose }) {
     <div className="lightbox open" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <button className="lightbox-close" onClick={onClose}>×</button>
       <div className="post-modal-content" onClick={e => e.stopPropagation()}>
-        {imgUrl && (
-          <div className="post-modal-img">
-            <img src={imgUrl} alt={title} />
+        <div className="post-modal-img" style={{ display: 'flex', overflowX: 'auto', snapType: 'x mandatory', gap: 4 }}>
+          {(p.images && p.images.length > 0) ? (
+            p.images.map((img, i) => (
+              <img key={i} src={img} alt={`${title} - ${i + 1}`} style={{ flex: '0 0 100%', width: '100%', objectFit: 'contain', scrollSnapAlign: 'center', background: '#000' }} />
+            ))
+          ) : imgUrl ? (
+            <img src={imgUrl} alt={title} style={{ flex: '0 0 100%', width: '100%', objectFit: 'contain', background: '#000' }} />
+          ) : null}
+        </div>
+        {(p.images && p.images.length > 1) && (
+          <div style={{ textAlign: 'center', fontSize: '0.8rem', color: '#888', marginTop: 4, fontStyle: 'italic' }}>
+            👈 Swipe/Scroll for more images ({p.images.length}) 👉
           </div>
         )}
         <div className="post-modal-body">
