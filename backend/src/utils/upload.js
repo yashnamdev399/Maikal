@@ -9,16 +9,7 @@ dirs.forEach(d => {
   if (!fs.existsSync(full)) fs.mkdirSync(full, { recursive: true });
 });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const isPdf = file.mimetype === 'application/pdf';
-    cb(null, path.join(__dirname, '../../', isPdf ? 'uploads/pdfs' : 'uploads/images'));
-  },
-  filename: (req, file, cb) => {
-    const unique = Date.now() + '-' + Math.round(Math.random() * 1e6);
-    cb(null, unique + path.extname(file.originalname));
-  },
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf'];
@@ -26,6 +17,16 @@ const fileFilter = (req, file, cb) => {
   else cb(new Error('Only images and PDFs are allowed'), false);
 };
 
-const upload = multer({ storage, fileFilter, limits: { fileSize: 20 * 1024 * 1024 } }); // 20MB
+const upload = multer({ storage, fileFilter, limits: { fileSize: 15 * 1024 * 1024 } }); // 15MB limit
+
+const getFileUrl = (file) => {
+  if (!file) return null;
+  if (file.buffer) {
+    return `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+  }
+  return null;
+};
+
+upload.getFileUrl = getFileUrl;
 
 module.exports = upload;

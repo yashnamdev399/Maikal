@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 router.put('/:id/image', authenticate, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'Image file required' });
-    const image_url = '/uploads/images/' + req.file.filename;
+    const image_url = upload.getFileUrl(req.file);
     await HeroSlide.findByIdAndUpdate(req.params.id, { image_url });
     res.json({ success: true, image_url });
   } catch (err) {
@@ -55,7 +55,7 @@ router.post('/', authenticate, upload.single('image'), async (req, res) => {
     
     let image_url = '/images/equalstock-7KhazgCqCNA-unsplash.jpg'; // default placeholder
     if (req.file) {
-      image_url = '/uploads/images/' + req.file.filename;
+      image_url = upload.getFileUrl(req.file);
     }
     
     const newSlide = await HeroSlide.create({

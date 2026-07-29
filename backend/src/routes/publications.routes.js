@@ -31,8 +31,8 @@ router.post('/', authenticate, upload.fields([
 ]), async (req, res) => {
   try {
     const { title_en, title_hi, description_en, description_hi } = req.body;
-    const cover_url = req.files?.cover?.[0] ? '/uploads/images/' + req.files.cover[0].filename : null;
-    const pdf_url = req.files?.pdf?.[0] ? '/uploads/pdfs/' + req.files.pdf[0].filename : null;
+    const cover_url = req.files?.cover?.[0] ? upload.getFileUrl(req.files.cover[0]) : null;
+    const pdf_url = req.files?.pdf?.[0] ? upload.getFileUrl(req.files.pdf[0]) : null;
     if (!pdf_url) return res.status(400).json({ success: false, message: 'PDF file is required' });
     const pub = await Publication.create({ title_en, title_hi, description_en, description_hi, cover_url, pdf_url });
     res.status(201).json({ success: true, data: pub });
@@ -55,10 +55,10 @@ router.put('/:id', authenticate, upload.fields([
     let pdf_url = existing.pdf_url;
 
     if (req.files?.cover?.[0]) {
-      cover_url = '/uploads/images/' + req.files.cover[0].filename;
+      cover_url = upload.getFileUrl(req.files.cover[0]);
     }
     if (req.files?.pdf?.[0]) {
-      pdf_url = '/uploads/pdfs/' + req.files.pdf[0].filename;
+      pdf_url = upload.getFileUrl(req.files.pdf[0]);
     }
 
     await Publication.findByIdAndUpdate(req.params.id, {

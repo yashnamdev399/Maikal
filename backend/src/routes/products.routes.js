@@ -40,7 +40,7 @@ router.post('/', authenticate, upload.single('image'), async (req, res) => {
     if (!name_en || !name_hi || !price) {
       return res.status(400).json({ success: false, message: 'name_en, name_hi, price are required' });
     }
-    const image_url = req.file ? '/uploads/images/' + req.file.filename : (req.body.image_url || null);
+    const image_url = req.file ? upload.getFileUrl(req.file) : (req.body.image_url || null);
     const product = await Product.create({
       name_en, name_hi, description_en, description_hi,
       price: parseFloat(price), unit, category, image_url,
@@ -59,8 +59,7 @@ router.put('/:id', authenticate, upload.single('image'), async (req, res) => {
 
     let image_url = req.body.image_url || null;
     if (req.file) {
-      const existing = await Product.findById(req.params.id);
-      image_url = '/uploads/images/' + req.file.filename;
+      image_url = upload.getFileUrl(req.file);
     }
 
     await Product.findByIdAndUpdate(req.params.id, {

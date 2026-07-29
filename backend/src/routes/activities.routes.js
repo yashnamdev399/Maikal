@@ -33,7 +33,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', authenticate, upload.array('images', 10), async (req, res) => {
   try {
     const { title_en, title_hi, content_en, content_hi } = req.body;
-    const images = (req.files || []).map(f => '/uploads/images/' + f.filename);
+    const images = (req.files || []).map(f => upload.getFileUrl(f)).filter(Boolean);
     const activity = await Activity.create({ title_en, title_hi, content_en, content_hi, images });
     res.status(201).json({ success: true, data: activity });
   } catch (err) {
@@ -45,7 +45,7 @@ router.post('/', authenticate, upload.array('images', 10), async (req, res) => {
 router.put('/:id', authenticate, upload.array('images', 10), async (req, res) => {
   try {
     const { title_en, title_hi, content_en, content_hi, existing_images } = req.body;
-    const newImages = (req.files || []).map(f => '/uploads/images/' + f.filename);
+    const newImages = (req.files || []).map(f => upload.getFileUrl(f)).filter(Boolean);
     let kept = [];
     try { kept = JSON.parse(existing_images || '[]'); } catch {}
     const allImages = [...kept, ...newImages];

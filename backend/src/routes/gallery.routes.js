@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 router.post('/', authenticate, upload.single('image'), async (req, res) => {
   try {
     const { caption_en, caption_hi, category } = req.body;
-    const image_url = req.file ? `/uploads/images/${req.file.filename}` : req.body.image_url;
+    const image_url = req.file ? upload.getFileUrl(req.file) : req.body.image_url;
     if (!image_url) return res.status(400).json({ success: false, message: 'Image file or image_url is required' });
 
     const image = await Gallery.create({ image_url, caption_en, caption_hi, category });

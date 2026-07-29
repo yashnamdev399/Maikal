@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 router.post('/', authenticate, upload.single('image'), async (req, res) => {
   try {
     const { title_en, title_hi, content_en, content_hi } = req.body;
-    const image_url = req.file ? `/uploads/images/${req.file.filename}` : (req.body.image_url || null);
+    const image_url = req.file ? upload.getFileUrl(req.file) : (req.body.image_url || null);
     const post = await Post.create({ title_en, title_hi, content_en, content_hi, image_url });
     res.status(201).json({ success: true, data: post });
   } catch (err) {
@@ -34,7 +34,7 @@ router.put('/:id', authenticate, upload.single('image'), async (req, res) => {
   try {
     const { title_en, title_hi, content_en, content_hi } = req.body;
     const update = { title_en, title_hi, content_en, content_hi };
-    if (req.file) update.image_url = `/uploads/images/${req.file.filename}`;
+    if (req.file) update.image_url = upload.getFileUrl(req.file);
     else if (req.body.image_url !== undefined) update.image_url = req.body.image_url || null;
     await Post.findByIdAndUpdate(req.params.id, update);
     res.json({ success: true, message: 'Post updated' });
