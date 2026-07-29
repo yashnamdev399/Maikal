@@ -7,6 +7,7 @@ import ProductsSection from '../components/ProductsSection';
 import StoriesSection  from '../components/StoriesSection';
 import FarmCarousel    from '../components/FarmCarousel';
 import ContactSection  from '../components/ContactSection';
+import SocialSection   from '../components/SocialSection';
 import {
   StatsStrip, FeaturesStrip, TrustStrip, ProcessSection,
   PromoBanner, Testimonials, TrustBadges, AboutSection,
@@ -29,6 +30,7 @@ export default function HomePage() {
       <PromoBanner />
       <StoriesSection />
       <Testimonials />
+      <SocialSection />
       <TrustBadges />
       <FarmCarousel />
       <AboutSection />
