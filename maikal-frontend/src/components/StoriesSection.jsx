@@ -18,13 +18,13 @@ function CarouselNav({ idx, maxIdx, move, setIdx }) {
   );
 }
 
-function PostCard({ p, lang }) {
+function PostCard({ p, lang, onClick }) {
   const title   = lang === 'hi' ? (p.title_hi || p.title_en || '') : (p.title_en || p.title_hi || '');
   const titleAlt= lang === 'hi' ? (p.title_en || '') : (p.title_hi || '');
   const content = lang === 'hi' ? (p.content_hi || p.content_en || '') : (p.content_en || p.content_hi || '');
   const date    = new Date(p.published_at || p.createdAt || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
   return (
-    <div className="post-card">
+    <div className="post-card" onClick={onClick} style={{ cursor: 'pointer' }}>
       <div className="post-img">
         {p.image_url
           ? <img src={p.image_url} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
@@ -35,6 +35,33 @@ function PostCard({ p, lang }) {
         <div className="post-title">{title}</div>
         {titleAlt && <div className="post-title-hi">{titleAlt}</div>}
         <div className="post-excerpt">{content}</div>
+      </div>
+    </div>
+  );
+}
+
+function PostModal({ p, lang, onClose }) {
+  if (!p) return null;
+  const title   = lang === 'hi' ? (p.title_hi || p.title_en || '') : (p.title_en || p.title_hi || '');
+  const titleAlt= lang === 'hi' ? (p.title_en || '') : (p.title_hi || '');
+  const content = lang === 'hi' ? (p.content_hi || p.content_en || '') : (p.content_en || p.content_hi || '');
+  const date    = new Date(p.published_at || p.createdAt || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+  
+  return (
+    <div className="lightbox open" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <button className="lightbox-close" onClick={onClose}>×</button>
+      <div className="post-modal-content" onClick={e => e.stopPropagation()}>
+        {p.image_url && (
+          <div className="post-modal-img">
+            <img src={p.image_url} alt={title} />
+          </div>
+        )}
+        <div className="post-modal-body">
+          <div className="post-date">📅 {date}</div>
+          <h2>{title}</h2>
+          {titleAlt && <h4 className="text-muted">{titleAlt}</h4>}
+          <div className="post-full-content">{content}</div>
+        </div>
       </div>
     </div>
   );
@@ -51,6 +78,7 @@ export default function StoriesSection() {
   // Carousel States
   const [postIdx, setPostIdx]       = useState(0);
   const [galleryIdx, setGalleryIdx] = useState(0);
+  const [activePost, setActivePost] = useState(null);
 
   const getSpv = () => (window.innerWidth <= 768 ? 1 : 3);
   const [slidesPerView, setSPV] = useState(getSpv());
@@ -119,7 +147,7 @@ export default function StoriesSection() {
               <div className="farm-carousel" style={{ transform: `translateX(-${postPct}%)` }}>
                 {posts.map(p => (
                   <div key={p._id || p.id} className="carousel-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%`, padding: '0 10px' }}>
-                    <PostCard p={p} lang={lang} />
+                    <PostCard p={p} lang={lang} onClick={() => setActivePost(p)} />
                   </div>
                 ))}
               </div>
@@ -157,6 +185,7 @@ export default function StoriesSection() {
       )}
 
       <Lightbox src={lightbox} onClose={() => setLightbox(null)} />
+      {activePost && <PostModal p={activePost} lang={lang} onClose={() => setActivePost(null)} />}
     </section>
   );
 }

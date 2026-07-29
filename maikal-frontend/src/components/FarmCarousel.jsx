@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLang } from '../context/LangContext';
 import { api } from '../utils/api';
+import Lightbox from './Lightbox';
 
 const STATIC_SLIDES = [
   { img: '/images/equalstock-7KhazgCqCNA-unsplash.jpg',          icon: '👩‍🌾', en: 'Natural Farmers of Maa Narmada',  hi: 'माँ नर्मदा के प्राकृतिक किसान' },
@@ -19,6 +20,8 @@ export default function FarmCarousel() {
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
   const timerRef = useRef(null);
+
+  const [lightboxIndex, setLightboxIndex] = useState(null);
 
   const spv = () => window.innerWidth <= 768 ? 1 : 3;
   const [slidesPerView, setSPV] = useState(spv());
@@ -85,7 +88,7 @@ export default function FarmCarousel() {
         <div className="farm-carousel-wrap">
           <div className="farm-carousel" style={{ transform: `translateX(-${pct}%)` }}>
             {slides.map((s, i) => (
-              <div key={i} className="farm-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%` }}>
+              <div key={i} className="farm-slide" style={{ width: `${100 / slidesPerView}%`, flex: `0 0 ${100 / slidesPerView}%`, cursor: 'pointer' }} onClick={() => setLightboxIndex(i)}>
                 <img src={s.img} alt={lang === 'hi' ? s.hi : s.en} />
                 <div className="farm-slide-caption">
                   <span>{s.icon}</span>
@@ -106,6 +109,14 @@ export default function FarmCarousel() {
             </>
           )}
         </div>
+      )}
+      
+      {lightboxIndex !== null && (
+        <Lightbox 
+          images={slides.map(s => ({ image_url: s.img, caption: lang === 'hi' ? s.hi : s.en }))} 
+          initialIndex={lightboxIndex} 
+          onClose={() => setLightboxIndex(null)} 
+        />
       )}
     </section>
   );
