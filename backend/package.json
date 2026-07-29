@@ -4,7 +4,6 @@
   "description": "Maikal Natural Foundation Website API (MongoDB)",
   "main": "src/server.js",
   "scripts": {
-    "build": "cd ../maikal-frontend && npm install && npm run build",
     "start": "node src/server.js",
     "start:prod": "NODE_ENV=production node src/server.js",
     "dev": "nodemon src/server.js",
