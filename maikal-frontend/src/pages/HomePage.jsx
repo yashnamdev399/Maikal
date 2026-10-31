@@ -3,13 +3,13 @@ import Footer    from '../components/Footer';
 import ToastContainer from '../components/Toast';
 import AnnouncementBar from '../components/AnnouncementBar';
 import HeroSlider from '../components/HeroSlider';
-import ProductsSection from '../components/ProductsSection';
 import StoriesSection  from '../components/StoriesSection';
 import FarmCarousel    from '../components/FarmCarousel';
+import CollaborationSection from '../components/CollaborationSection';
 import ContactSection  from '../components/ContactSection';
 import {
   StatsStrip, FeaturesStrip, TrustStrip, ProcessSection,
-  PromoBanner, Testimonials, TrustBadges, AboutSection,
+  PromoBanner, TrustBadges, AboutSection,
 } from '../components/StaticSections';
 
 export default function HomePage() {
@@ -25,13 +25,12 @@ export default function HomePage() {
       <FeaturesStrip />
       <TrustStrip />
       <ProcessSection />
-      <ProductsSection />
       <PromoBanner />
       <StoriesSection />
-      <Testimonials />
       <TrustBadges />
       <FarmCarousel />
       <AboutSection />
+      <CollaborationSection />
       <ContactSection />
       <Footer />
     </>

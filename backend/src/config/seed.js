@@ -12,6 +12,7 @@ const Admin = require('../models/Admin');
 const Product = require('../models/Product');
 const HeroSlide = require('../models/HeroSlide');
 const Testimonial = require('../models/Testimonial');
+const Collaboration = require('../models/Collaboration');
 
 const seed = async () => {
   try {
@@ -74,6 +75,20 @@ const seed = async () => {
       console.log('✅ Testimonials seeded (3)');
     } else {
       console.log(`⏭️  Testimonials already exist (${testCount})`);
+    }
+
+    // --- Collaborations ---
+    const collabCount = await Collaboration.countDocuments();
+    if (collabCount === 0) {
+      await Collaboration.insertMany([
+        { name_en: 'NARMADA SAMAGRA', name_hi: 'नर्मदा समग्र', logo_url: '/images/collaborations/narmada-samagra.png', sort_order: 1 },
+        { name_en: 'MADHYA PRADESH BIODIVERSITY BOARD', name_hi: 'मध्य प्रदेश राज्य जैव विविधता बोर्ड', logo_url: '/images/collaborations/mp-biodiversity.png', sort_order: 2 },
+        { name_en: 'AIGGPA', name_hi: 'एआईजीजीपीए (AIGGPA)', logo_url: '/images/collaborations/aiggpa.png', sort_order: 3 },
+        { name_en: 'MINISTRY OF ENVIRONMENT, FOREST & CLIMATE CHANGE', name_hi: 'पर्यावरण, वन एवं जलवायु परिवर्तन मंत्रालय', logo_url: '/images/collaborations/moefcc.png', sort_order: 4 },
+      ]);
+      console.log('✅ Collaborations seeded (4)');
+    } else {
+      console.log(`⏭️  Collaborations already exist (${collabCount})`);
     }
 
     console.log('\n🌿 Seed complete!');

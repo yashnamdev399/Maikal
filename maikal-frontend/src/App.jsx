@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { LangProvider } from './context/LangContext';
 import { AuthProvider } from './context/AuthContext';
 import HomePage       from './pages/HomePage';
+import ProductsPage   from './pages/ProductsPage';
 import ActivitiesPage from './pages/ActivitiesPage';
 import PublicationsPage from './pages/PublicationsPage';
 import AdminPage      from './pages/admin/AdminPage';
@@ -12,6 +13,7 @@ export default function App() {
       <LangProvider>
         <Routes>
           <Route path="/"             element={<HomePage />} />
+          <Route path="/products"     element={<ProductsPage />} />
           <Route path="/activities"   element={<ActivitiesPage />} />
           <Route path="/publications" element={<PublicationsPage />} />
           <Route path="/admin/*"      element={<AdminPage />} />

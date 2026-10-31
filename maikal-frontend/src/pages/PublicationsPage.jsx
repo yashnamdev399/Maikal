@@ -77,7 +77,10 @@ export default function PublicationsPage() {
               type="text"
               placeholder={t('Search publications...', 'प्रकाशन खोजें...')}
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => {
+                setSearch(e.target.value);
+                if (!e.target.value.trim()) load('');
+              }}
               className="pub-search-input"
             />
             <button type="submit" className="pub-search-btn">🔍</button>

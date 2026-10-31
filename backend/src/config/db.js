@@ -1,4 +1,10 @@
 const mongoose = require('mongoose');
+const dns = require('dns');
+
+// Fallback to reliable public DNS for Atlas SRV record resolution
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (_) {}
 
 const connectDB = async () => {
   try {

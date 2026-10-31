@@ -1,4 +1,4 @@
-const TEXT = '🌾 Fresh harvest in stock — Order today, delivery in Bhopal & Indore only\u00a0\u00a0|\u00a0\u00a0📞 9926036075\u00a0\u00a0|\u00a0\u00a0✉️ maikalnatural@gmail.com\u00a0\u00a0\u00a0\u00a0';
+const TEXT = '';
 
 export default function AnnouncementBar() {
   return (

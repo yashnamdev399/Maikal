@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 
 export default function Lightbox({ src, images, initialIndex = 0, onClose }) {
   const [idx, setIdx] = useState(initialIndex);
+
+  useEffect(() => {
+    setIdx(initialIndex);
+  }, [initialIndex, src]);
   
   // Support both single src and array of images
   let imgList = [];
@@ -10,7 +14,7 @@ export default function Lightbox({ src, images, initialIndex = 0, onClose }) {
 
   if (imgList.length === 0) return null;
   const currentImg = imgList[idx] || imgList[0];
-  const url = typeof currentImg === 'string' ? currentImg : (currentImg.image_url || currentImg.img || currentImg.url);
+  const url = typeof currentImg === 'string' ? currentImg : (currentImg?.image_url || currentImg?.img || currentImg?.url);
 
   const move = (e, dir) => {
     e.stopPropagation();

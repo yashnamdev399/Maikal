@@ -42,7 +42,7 @@ function ProductCard({ p, lang }) {
   );
 }
 
-export default function ProductsSection() {
+export default function ProductsSection({ showHeader = true }) {
   const { lang, t } = useLang();
   const [all, setAll]         = useState([]);
   const [cat, setCat]         = useState('');
@@ -67,12 +67,14 @@ export default function ProductsSection() {
 
   return (
     <section className="products-section" id="products">
-      <div className="section-header">
-        <span className="section-tag">{t('Our Products', 'हमारे उत्पाद')}</span>
-        <h2>{t("Nature's Best, Naturally Grown", 'प्रकृति का सर्वश्रेष्ठ, प्राकृतिक रूप से उगाया गया')}</h2>
-        <p>{t("Handpicked, naturally grown products from Narmada's Ecosystem", "माँ नर्मदा के पारिस्थितिकी तंत्र से हस्तचयनित, प्राकृतिक रूप से उगाए गए उत्पाद")}</p>
-        <div className="section-divider" />
-      </div>
+      {showHeader && (
+        <div className="section-header">
+          <span className="section-tag">{t('Our Products', 'हमारे उत्पाद')}</span>
+          <h2>{t("Nature's Best, Naturally Grown", 'प्रकृति का सर्वश्रेष्ठ, प्राकृतिक रूप से उगाया गया')}</h2>
+          <p>{t("Handpicked, naturally grown products from Narmada's Ecosystem", "माँ नर्मदा के पारिस्थितिकी तंत्र से हस्तचयनित, प्राकृतिक रूप से उगाए गए उत्पाद")}</p>
+          <div className="section-divider" />
+        </div>
+      )}
 
       <div className="category-tabs">
         <button className={`cat-tab${cat === '' ? ' active' : ''}`} onClick={() => handleCatChange('')}>

@@ -10,6 +10,7 @@ import MessagesTab    from './tabs/MessagesTab';
 import ActivitiesTab  from './tabs/ActivitiesTab';
 import PublicationsTab from './tabs/PublicationsTab';
 import HeroTab        from './tabs/HeroTab';
+import CollaborationsTab from './tabs/CollaborationsTab';
 import TestimonialsTab from './tabs/TestimonialsTab';
 
 function ProtectedRoute({ children }) {
@@ -33,6 +34,7 @@ export default function AdminPage() {
               <Route path="activities"   element={<ActivitiesTab />} />
               <Route path="publications" element={<PublicationsTab />} />
               <Route path="hero"         element={<HeroTab />} />
+              <Route path="collaborations" element={<CollaborationsTab />} />
               <Route path="testimonials" element={<TestimonialsTab />} />
             </Routes>
           </AdminLayout>

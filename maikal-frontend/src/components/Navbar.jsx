@@ -19,10 +19,10 @@ export default function Navbar() {
 
   const navLinks = [
     { href: '/#home',        en: 'Home',           hi: 'होम' },
-    { href: '/#products',    en: 'Products',        hi: 'उत्पाद' },
     { href: '/activities',   en: 'Our Activities',  hi: 'हमारी गतिविधियां' },
     { href: '/publications', en: 'Publications',    hi: 'प्रकाशन' },
-    { href: '/#stories',     en: 'Stories',         hi: 'कहानियाँ' },
+    // { href: '/#stories',     en: 'Stories',         hi: 'कहानियाँ' },
+    { href: '/products',     en: 'Our Products',   hi: 'हमारे उत्पाद' },
     { href: '/#about',       en: 'About',           hi: 'हमारे बारे में' },
     { href: '/#contact',     en: 'Contact',         hi: 'संपर्क' },
   ];

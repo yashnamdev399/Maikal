@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
@@ -6,6 +6,7 @@ const fs    = require('fs');
 const swaggerUi    = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const { connectDB } = require('./config/db');
+const compression = require('compression');
 
 const app  = express();
 const isProd = process.env.NODE_ENV === 'production';
@@ -24,6 +25,17 @@ if (hasPublicBuild) {
 }
 
 app.use(cors());
+app.use(compression());
+
+// Performance: Cache public GET API requests for 60 seconds (with 5 min stale-while-revalidate)
+app.use('/api', (req, res, next) => {
+  if (req.method === 'GET' && !req.headers.authorization) {
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+  } else {
+    res.setHeader('Cache-Control', 'no-store');
+  }
+  next();
+});
 app.use(express.json());
 
 // Serve uploaded files
@@ -68,6 +80,7 @@ app.use('/api/activities',   require('./routes/activities.routes'));
 app.use('/api/publications', require('./routes/publications.routes'));
 app.use('/api/hero',         require('./routes/hero.routes'));
 app.use('/api/testimonials', require('./routes/testimonials.routes'));
+app.use('/api/collaborations', require('./routes/collaboration.routes'));
 
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');
@@ -80,6 +93,7 @@ app.get('/sitemap.xml', (req, res) => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>${baseUrl}/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+  <url><loc>${baseUrl}/products</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
   <url><loc>${baseUrl}/activities</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
   <url><loc>${baseUrl}/publications</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
 </urlset>`;

@@ -17,11 +17,50 @@ export default function HeroTab() {
   const open = (s) => {
     setEditing(s);
     setForm({
-      badge_en: s.badge_en||'', badge_hi: s.badge_hi||'',
-      title_en: s.title_en||'', title_hi: s.title_hi||'',
-      accent_en: s.accent_en||'', accent_hi: s.accent_hi||'',
-      tagline_en: s.tagline_en||'', tagline_hi: s.tagline_hi||'',
-      desc_en: s.desc_en||'', desc_hi: s.desc_hi||'',
+      badge_en: s.badge_en || '', badge_hi: s.badge_hi || '',
+      title_en: s.title_en || '', title_hi: s.title_hi || '',
+      accent_en: s.accent_en || '', accent_hi: s.accent_hi || '',
+      tagline_en: s.tagline_en || '', tagline_hi: s.tagline_hi || '',
+      desc_en: s.desc_en || '', desc_hi: s.desc_hi || '',
+
+      stat1_val_en: s.stat1_val_en || '13+',
+      stat1_lbl_en: s.stat1_lbl_en || 'Years of Work',
+      stat1_lbl_hi: s.stat1_lbl_hi || 'कार्य के वर्ष',
+
+      stat2_val_en: s.stat2_val_en || 'Narmada Ecosystem',
+      stat2_val_hi: s.stat2_val_hi || 'नर्मदा इकोसिस्टम',
+      stat2_lbl_en: s.stat2_lbl_en || 'Operational Area',
+      stat2_lbl_hi: s.stat2_lbl_hi || 'कार्यक्षेत्र',
+
+      stat3_val_en: s.stat3_val_en || 'Section 8',
+      stat3_lbl_en: s.stat3_lbl_en || 'Not for Profit',
+      stat3_lbl_hi: s.stat3_lbl_hi || 'गैर-लाभकारी',
+    });
+    setImgFile(null);
+    setModal(true);
+  };
+
+  const openNew = () => {
+    setEditing(null);
+    setForm({
+      badge_en: '', badge_hi: '',
+      title_en: '', title_hi: '',
+      accent_en: '', accent_hi: '',
+      tagline_en: '', tagline_hi: '',
+      desc_en: '', desc_hi: '',
+
+      stat1_val_en: '13+',
+      stat1_lbl_en: 'Years of Work',
+      stat1_lbl_hi: 'कार्य के वर्ष',
+
+      stat2_val_en: 'Narmada Ecosystem',
+      stat2_val_hi: 'नर्मदा इकोसिस्टम',
+      stat2_lbl_en: 'Operational Area',
+      stat2_lbl_hi: 'कार्यक्षेत्र',
+
+      stat3_val_en: 'सेक्शन 8',
+      stat3_lbl_en: 'Not for Profit',
+      stat3_lbl_hi: 'गैर-लाभकारी',
     });
     setImgFile(null);
     setModal(true);
@@ -30,10 +69,6 @@ export default function HeroTab() {
   const save = async () => {
     setSaving(true);
     try {
-      const fd = new FormData();
-      Object.entries(form).forEach(([k, v]) => fd.append(k, v));
-      if (imgFile) fd.append('image', imgFile);
-
       if (editing) {
         // Save text content
         await api.put(`/hero/${editing._id || editing.id}`, form);
@@ -44,12 +79,19 @@ export default function HeroTab() {
           await api.upload('PUT', `/hero/${editing._id || editing.id}/image`, imgFd);
         }
       } else {
+        const fd = new FormData();
+        Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+        if (imgFile) fd.append('image', imgFile);
         await api.upload('POST', '/hero', fd);
       }
       toast(editing ? 'Slide updated!' : 'Slide added!');
-      setModal(false); load();
-    } catch (e) { toast(e.message, 'error'); }
-    finally { setSaving(false); }
+      setModal(false);
+      load();
+    } catch (e) {
+      toast(e.message || 'Failed to save slide', 'error');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
@@ -63,27 +105,14 @@ export default function HeroTab() {
     } catch (e) { toast(e.message, 'error'); }
   };
 
-  const openNew = () => {
-    setEditing(null);
-    setForm({
-      badge_en: '', badge_hi: '',
-      title_en: '', title_hi: '',
-      accent_en: '', accent_hi: '',
-      tagline_en: '', tagline_hi: '',
-      desc_en: '', desc_hi: '',
-    });
-    setImgFile(null);
-    setModal(true);
-  };
-
   return (
     <div className="tab-panel active">
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16}}>
         <div className="page-title" style={{marginBottom: 0}}>🎨 Hero Slides</div>
-        <button className="btn-primary" onClick={openNew}>+ Add Slide</button>
+        <button type="button" className="btn-primary" onClick={openNew}>+ Add Slide</button>
       </div>
       <p style={{color:'#6b7280',fontSize:'.85rem',marginBottom:20}}>
-        Edit hero slider slides — change images, text, and badges.
+        Edit hero slider slides — change images, text, badges, and bottom stats.
       </p>
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:16}}>
         {slides.map((s, i) => (
@@ -97,21 +126,26 @@ export default function HeroTab() {
               <div style={{fontWeight:700,fontSize:'.9rem',marginBottom:2}}>{s.title_en} {s.accent_en}</div>
               <div style={{fontSize:'.78rem',color:'#6b7280',marginBottom:12}}>{s.badge_en}</div>
               <div style={{display:'flex', gap: '8px'}}>
-                <button className="edit-btn" style={{flex: 1}} onClick={() => open(s)}>✏️ Edit</button>
-                <button className="delete-btn" style={{padding: '8px 12px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '6px', cursor: 'pointer'}} onClick={() => remove(s)}>🗑️</button>
+                <button type="button" className="edit-btn" style={{flex: 1}} onClick={() => open(s)}>✏️ Edit</button>
+                <button type="button" className="delete-btn" style={{padding: '8px 12px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '6px', cursor: 'pointer'}} onClick={() => remove(s)}>🗑️</button>
               </div>
             </div>
           </div>
         ))}
         {!slides.length && (
           <p style={{color:'#6b7280',padding:20}}>
-            No slides found. Run the new SQL in init.sql to seed hero slides, then refresh.
+            No hero slides found. Click '+ Add Slide' to create one.
           </p>
         )}
       </div>
 
-      {(modal && (editing || !editing)) && (
-        <Modal title={editing ? `Edit Slide ${editing.sort_order || ''}` : 'Add New Slide'} onClose={() => setModal(false)} onSave={save} saving={saving}>
+      {modal && (
+        <Modal
+          title={editing ? `Edit Slide ${editing.sort_order || ''}` : 'Add New Slide'}
+          onClose={() => setModal(false)}
+          onSave={save}
+          saving={saving}
+        >
           <div className="form-group">
             <label>Hero Image</label>
             {editing?.image_url && !imgFile && (
@@ -138,6 +172,82 @@ export default function HeroTab() {
           </div>
           <div className="form-group"><label>Description (English)</label><textarea rows={3} value={form.desc_en} onChange={set('desc_en')} /></div>
           <div className="form-group"><label>विवरण (हिंदी)</label><textarea rows={3} value={form.desc_hi} onChange={set('desc_hi')} /></div>
+
+          {/* Dynamic 3 Stats Section */}
+          <div style={{ margin: '20px 0 10px', borderTop: '2px solid #e5e7eb', paddingTop: 14 }}>
+            <strong style={{ fontSize: '.9rem', color: '#0a7a6e' }}>📊 Bottom Stats (Hero Bar)</strong>
+            <p style={{ fontSize: '.75rem', color: '#6b7280', margin: '2px 0 12px' }}>
+              Directly edit the 3 stat numbers & labels displayed at the bottom of the hero banner.
+            </p>
+          </div>
+
+          <div style={{ background: '#f9fafb', padding: 12, borderRadius: 8, marginBottom: 12, border: '1px solid #f3f4f6' }}>
+            <div style={{ fontSize: '.78rem', fontWeight: 700, color: '#374151', marginBottom: 6 }}>1️⃣ First Stat</div>
+            <div className="form-row">
+              <div className="form-group"><label>Value</label><input value={form.stat1_val_en || ''} onChange={set('stat1_val_en')} placeholder="13+" /></div>
+              <div className="form-group"><label>Label (English)</label><input value={form.stat1_lbl_en || ''} onChange={set('stat1_lbl_en')} placeholder="Years of Work" /></div>
+              <div className="form-group"><label>Label (हिंदी)</label><input value={form.stat1_lbl_hi || ''} onChange={set('stat1_lbl_hi')} placeholder="कार्य के वर्ष" /></div>
+            </div>
+          </div>
+
+          <div style={{ background: '#f9fafb', padding: 12, borderRadius: 8, marginBottom: 12, border: '1px solid #f3f4f6' }}>
+            <div style={{ fontSize: '.78rem', fontWeight: 700, color: '#374151', marginBottom: 6 }}>2️⃣ Second Stat</div>
+            <div className="form-row">
+              <div className="form-group"><label>Value (English)</label><input value={form.stat2_val_en || ''} onChange={set('stat2_val_en')} placeholder="Narmada Ecosystem" /></div>
+              <div className="form-group"><label>Value (हिंदी)</label><input value={form.stat2_val_hi || ''} onChange={set('stat2_val_hi')} placeholder="नर्मदा इकोसिस्टम" /></div>
+            </div>
+            <div className="form-row">
+              <div className="form-group"><label>Label (English)</label><input value={form.stat2_lbl_en || ''} onChange={set('stat2_lbl_en')} placeholder="Operational Area" /></div>
+              <div className="form-group"><label>Label (हिंदी)</label><input value={form.stat2_lbl_hi || ''} onChange={set('stat2_lbl_hi')} placeholder="कार्यक्षेत्र" /></div>
+            </div>
+          </div>
+
+          <div style={{ background: '#f9fafb', padding: 12, borderRadius: 8, marginBottom: 12, border: '1px solid #f3f4f6' }}>
+            <div style={{ fontSize: '.78rem', fontWeight: 700, color: '#374151', marginBottom: 6 }}>3️⃣ Third Stat</div>
+            <div className="form-row">
+              <div className="form-group"><label>Value</label><input value={form.stat3_val_en || ''} onChange={set('stat3_val_en')} placeholder="Section 8" /></div>
+              <div className="form-group"><label>Label (English)</label><input value={form.stat3_lbl_en || ''} onChange={set('stat3_lbl_en')} placeholder="Not for Profit" /></div>
+              <div className="form-group"><label>Label (हिंदी)</label><input value={form.stat3_lbl_hi || ''} onChange={set('stat3_lbl_hi')} placeholder="गैर-लाभकारी" /></div>
+            </div>
+          </div>
+
+          {/* Dynamic 3 Stats Section */}
+          <div style={{ margin: '20px 0 10px', borderTop: '2px solid #e5e7eb', paddingTop: 14 }}>
+            <strong style={{ fontSize: '.9rem', color: '#0a7a6e' }}>📊 Bottom Stats (Hero Bar)</strong>
+            <p style={{ fontSize: '.75rem', color: '#6b7280', margin: '2px 0 12px' }}>
+              Directly edit the 3 stat numbers & labels displayed at the bottom of the hero banner.
+            </p>
+          </div>
+
+          <div style={{ background: '#f9fafb', padding: 12, borderRadius: 8, marginBottom: 12, border: '1px solid #f3f4f6' }}>
+            <div style={{ fontSize: '.78rem', fontWeight: 700, color: '#374151', marginBottom: 6 }}>1️⃣ First Stat</div>
+            <div className="form-row">
+              <div className="form-group"><label>Value</label><input value={form.stat1_val_en || ''} onChange={set('stat1_val_en')} placeholder="13+" /></div>
+              <div className="form-group"><label>Label (English)</label><input value={form.stat1_lbl_en || ''} onChange={set('stat1_lbl_en')} placeholder="Years of Work" /></div>
+              <div className="form-group"><label>Label (हिंदी)</label><input value={form.stat1_lbl_hi || ''} onChange={set('stat1_lbl_hi')} placeholder="कार्य के वर्ष" /></div>
+            </div>
+          </div>
+
+          <div style={{ background: '#f9fafb', padding: 12, borderRadius: 8, marginBottom: 12, border: '1px solid #f3f4f6' }}>
+            <div style={{ fontSize: '.78rem', fontWeight: 700, color: '#374151', marginBottom: 6 }}>2️⃣ Second Stat</div>
+            <div className="form-row">
+              <div className="form-group"><label>Value (English)</label><input value={form.stat2_val_en || ''} onChange={set('stat2_val_en')} placeholder="Narmada Ecosystem" /></div>
+              <div className="form-group"><label>Value (हिंदी)</label><input value={form.stat2_val_hi || ''} onChange={set('stat2_val_hi')} placeholder="नर्मदा इकोसिस्टम" /></div>
+            </div>
+            <div className="form-row">
+              <div className="form-group"><label>Label (English)</label><input value={form.stat2_lbl_en || ''} onChange={set('stat2_lbl_en')} placeholder="Operational Area" /></div>
+              <div className="form-group"><label>Label (हिंदी)</label><input value={form.stat2_lbl_hi || ''} onChange={set('stat2_lbl_hi')} placeholder="कार्यक्षेत्र" /></div>
+            </div>
+          </div>
+
+          <div style={{ background: '#f9fafb', padding: 12, borderRadius: 8, marginBottom: 12, border: '1px solid #f3f4f6' }}>
+            <div style={{ fontSize: '.78rem', fontWeight: 700, color: '#374151', marginBottom: 6 }}>3️⃣ Third Stat</div>
+            <div className="form-row">
+              <div className="form-group"><label>Value</label><input value={form.stat3_val_en || ''} onChange={set('stat3_val_en')} placeholder="Section 8" /></div>
+              <div className="form-group"><label>Label (English)</label><input value={form.stat3_lbl_en || ''} onChange={set('stat3_lbl_en')} placeholder="Not for Profit" /></div>
+              <div className="form-group"><label>Label (हिंदी)</label><input value={form.stat3_lbl_hi || ''} onChange={set('stat3_lbl_hi')} placeholder="गैर-लाभकारी" /></div>
+            </div>
+          </div>
         </Modal>
       )}
     </div>

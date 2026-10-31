@@ -19,7 +19,7 @@ export default function Footer() {
   return (
     <footer>
       <div className="footer-bottom">
-        <p>© 2024 Maikal Natural Foundation. CIN: U01400MP2013NPL031718</p>
+        <p>© 2026 Maikal Natural Foundation. </p>
         <div className="footer-bottom-social">
           <a href="https://www.instagram.com/maikalnaturalfoundation" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <InstaIcon />
@@ -29,8 +29,8 @@ export default function Footer() {
           </a>
         </div>
         <div className="footer-delivery-badge">
-            <span>🚚</span>
-            <span>{t('Delivery in Bhopal & Indore only', 'केवल भोपाल और इंदौर में डिलीवरी')}</span>
+            <span>🍀</span>
+           <span>{t('Restoring Nature, Strengthening Communities', 'प्रकृति का पुनरुद्धार, समुदायों का सशक्तिकरण')}</span>
           </div>
       </div>
     </footer>

@@ -43,8 +43,8 @@ export default function PostsTab() {
       formData.append('content_hi', form.content_hi);
       if (file) {
         formData.append('image', file);
-      } else if (form.image_url) {
-        formData.append('image_url', form.image_url);
+      } else {
+        formData.append('image_url', form.image_url || '');
       }
 
       if (editing) {
@@ -104,8 +104,15 @@ export default function PostsTab() {
             <label>Image Upload</label>
             <input type="file" accept="image/*" onChange={handleFileChange} />
             {preview && (
-              <div style={{ marginTop: 8 }}>
+              <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 10 }}>
                 <img src={preview} alt="Preview" style={{ width: 100, height: 70, objectFit: 'cover', borderRadius: 6 }} />
+                <button
+                  type="button"
+                  onClick={() => { setFile(null); setPreview(''); setForm(f => ({ ...f, image_url: '' })); }}
+                  style={{ padding: '4px 8px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: '12px' }}
+                >
+                  Remove Image
+                </button>
               </div>
             )}
           </div>

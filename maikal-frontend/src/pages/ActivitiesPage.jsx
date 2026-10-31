@@ -44,6 +44,7 @@ export default function ActivitiesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     api.get('/activities')
       .then(d => setActivities(d.data || []))
       .catch(() => {})

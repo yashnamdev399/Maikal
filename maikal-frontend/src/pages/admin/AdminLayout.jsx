@@ -8,6 +8,7 @@ const LINKS = [
   { to: '/admin/activities',    label: '🌿 Activities' },
   { to: '/admin/publications',  label: '📚 Publications' },
   { to: '/admin/hero',          label: '🎨 Hero Slides' },
+  { to: '/admin/collaborations', label: '🤝 Collaborations' },
   { to: '/admin/testimonials',  label: '⭐ Testimonials' },
   { to: '/admin/messages',      label: '💬 Messages' },
 ];

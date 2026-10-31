@@ -19,11 +19,27 @@ router.get('/', async (req, res) => {
 router.post('/', authenticate, upload.single('image'), async (req, res) => {
   try {
     const { caption_en, caption_hi, category } = req.body;
-    const image_url = req.file ? upload.getFileUrl(req.file) : req.body.image_url;
+    const image_url = req.file ? await upload.getFileUrl(req.file) : req.body.image_url;
     if (!image_url) return res.status(400).json({ success: false, message: 'Image file or image_url is required' });
 
     const image = await Gallery.create({ image_url, caption_en, caption_hi, category });
     res.status(201).json({ success: true, data: image });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// PUT update image caption/category (admin)
+router.put('/:id', authenticate, upload.single('image'), async (req, res) => {
+  try {
+    const { caption_en, caption_hi, category } = req.body;
+    const update = { caption_en, caption_hi, category };
+    if (req.file) {
+      update.image_url = await upload.getFileUrl(req.file);
+    }
+    const image = await Gallery.findByIdAndUpdate(req.params.id, update, { new: true });
+    if (!image) return res.status(404).json({ success: false, message: 'Image not found' });
+    res.json({ success: true, data: image });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

@@ -3,17 +3,6 @@ import { useLang } from '../context/LangContext';
 import { api } from '../utils/api';
 import PostModal from './PostModal';
 
-const STATIC_SLIDES = [
-  { img: '/images/equalstock-7KhazgCqCNA-unsplash.jpg',          icon: '👩‍🌾', en: 'Natural Farmers of Maa Narmada',  hi: 'माँ नर्मदा के प्राकृतिक किसान' },
-  { img: '/images/rajesh-ram-HOOKgN_zIY8-unsplash.jpg',           icon: '🚜',   en: 'Natural Farming Methods',   hi: 'प्राकृतिक खेती के तरीके' },
-  { img: '/images/sanjoy-saha-Lk92eqwxMBc-unsplash.jpg',          icon: '🏔️',  en: 'Maa Narmada’s Valley Fields',     hi: 'माँ नर्मदा घाटी के खेत' },
-  { img: '/images/markus-spiske-sFydXGrt5OA-unsplash.jpg',         icon: '💧',   en: 'Pure Water Irrigation',     hi: 'शुद्ध जल सिंचाई' },
-  { img: '/images/fernanda-martinez-yPPfWDSgUNw-unsplash.jpg',     icon: '🍅',   en: 'Fresh Natural Produce',     hi: 'ताजा प्राकृतिक उपज' },
-  { img: '/images/steven-weeks-DUPFowqI6oI-unsplash.jpg',          icon: '🌱',   en: 'Chemical Free Fields',      hi: 'रसायन मुक्त खेत' },
-  { img: '/images/gowtham-agm-_bd9U-w9a50-unsplash.jpg',           icon: '👨‍🌾', en: 'Our Dedicated Farmers',     hi: 'हमारे समर्पित किसान' },
-  { img: '/images/hari-gaddigopula-xZEYonpj41o-unsplash.jpg',      icon: '🌾',   en: 'Lush Green Farmlands',      hi: 'हरे-भरे खेत' },
-];
-
 export default function FarmCarousel() {
   const { lang, t } = useLang();
   const [idx, setIdx] = useState(0);
@@ -33,29 +22,47 @@ export default function FarmCarousel() {
   }, []);
 
   useEffect(() => {
-    api.get('/activities')
-      .then(res => {
-        const activities = res.data || [];
-        const fetchedSlides = activities
+    Promise.all([
+      api.get('/activities').catch(() => ({ data: [] })),
+      api.get('/gallery').catch(() => ({ data: [] }))
+    ])
+      .then(([actRes, galRes]) => {
+        const activities = actRes.data || [];
+        const gallery = galRes.data || [];
+
+        // Dynamic activity slides
+        const actSlides = activities
           .filter(a => a.images && a.images.length > 0)
-          .map(a => ({
-            ...a,
-            img: a.images[0],
-            icon: '🌱',
-            en: a.title_en || 'Activity',
-            hi: a.title_hi || 'गतिविधि',
-            content_en: a.content_en,
-            content_hi: a.content_hi,
+          .flatMap(a => {
+            const imgs = Array.isArray(a.images) ? a.images : [a.images];
+            return imgs.map(img => ({
+              ...a,
+              img,
+              icon: '🌱',
+              en: a.title_en || 'Activity',
+              hi: a.title_hi || 'गतिविधि',
+              content_en: a.content_en,
+              content_hi: a.content_hi,
+            }));
+          });
+
+        // Dynamic gallery slides
+        const galSlides = gallery
+          .filter(g => g.image_url)
+          .map(g => ({
+            ...g,
+            img: g.image_url,
+            icon: '📸',
+            en: g.caption_en || 'Gallery',
+            hi: g.caption_hi || 'गैलरी',
+            content_en: g.caption_en,
+            content_hi: g.caption_hi,
           }));
 
-        if (fetchedSlides.length > 0) {
-          setSlides(fetchedSlides);
-        } else {
-          setSlides(STATIC_SLIDES);
-        }
+        setSlides([...actSlides, ...galSlides]);
       })
       .catch(() => {
-        setSlides(STATIC_SLIDES);
+        setSlides([]);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -67,6 +74,13 @@ export default function FarmCarousel() {
   }, [slidesPerView, slides]);
 
   const maxIdx = Math.max(0, slides.length - slidesPerView);
+
+  useEffect(() => {
+    if (idx > maxIdx) {
+      setIdx(0);
+    }
+  }, [maxIdx, idx]);
+
   const move = (dir) => setIdx(i => {
     let next = i + dir;
     if (next > maxIdx) next = 0;
@@ -75,6 +89,11 @@ export default function FarmCarousel() {
   });
 
   const pct = (100 / slidesPerView) * idx;
+
+  // Only render dynamically when images exist; no default fallback images
+  if (!loading && slides.length === 0) {
+    return null;
+  }
 
   return (
     <section className="farm-section" id="farm">
